@@ -1,6 +1,5 @@
 plugins {
     id("com.android.library")
-    id("maven-publish")
 }
 
 group = "com.freetime"
@@ -31,7 +30,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    // WICHTIG: Release-Variante für Publishing freischalten
+    // JitPack braucht das für Source-Jars
     publishing {
         singleVariant("release") {
             withSourcesJar()
@@ -41,34 +40,6 @@ android {
 
 kotlin {
     jvmToolchain(17)
-}
-
-// WICHTIG: publishing MUSS außerhalb von android{} stehen
-publishing {
-    publications {
-        create<MavenPublication>("gpr") {
-            groupId = "com.freetime"
-            artifactId = "freetime-sdk"
-            version = "1.0.0"
-
-            // Android-Komponente erst NACH Auswertung verfügbar
-            afterEvaluate {
-                from(components["release"])
-            }
-        }
-    }
-
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/FreetimeMaker/freetimesdk")
-
-            credentials {
-                username = System.getenv("GITHUB_USER")
-                password = System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
 }
 
 dependencies {

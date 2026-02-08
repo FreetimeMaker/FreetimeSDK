@@ -8,7 +8,7 @@ import java.math.RoundingMode
  * Fee manager for handling developer fees and transaction costs
  */
 class FeeManager(
-    private val developerFeePercentage: BigDecimal = BigDecimal("1.0"), // 1% developer fee
+    private val developerFeePercentage: BigDecimal = BigDecimal("0.5"), // 0.5% developer fee
     private val developerWallets: Map<CoinType, String> = mapOf(
         CoinType.BITCOIN to "bc1qfreetime_developer_wallet_btc",
         CoinType.ETHEREUM to "0xfreetime_developer_wallet_eth",
@@ -37,7 +37,7 @@ class FeeManager(
         coinType: CoinType
     ): FeeBreakdown {
         
-        // Calculate developer fee (1% of transaction amount)
+        // Calculate developer fee (0.5% of transaction amount)
         val developerFee = amount.multiply(developerFeePercentage).divide(BigDecimal("100"), coinType.decimalPlaces, RoundingMode.HALF_UP)
         
         // Total fee = network fee + developer fee
@@ -121,7 +121,7 @@ data class FeeBreakdown(
             appendLine("Transaction Fee Breakdown (${coinType.symbol}):")
             appendLine("Original Amount: ${originalAmount.setScale(coinType.decimalPlaces, RoundingMode.HALF_UP)} ${coinType.symbol}")
             appendLine("Network Fee: ${networkFee.setScale(coinType.decimalPlaces, RoundingMode.HALF_UP)} ${coinType.symbol}")
-            appendLine("Developer Fee (1%): ${developerFee.setScale(coinType.decimalPlaces, RoundingMode.HALF_UP)} ${coinType.symbol}")
+            appendLine("Developer Fee (0.5%): ${developerFee.setScale(coinType.decimalPlaces, RoundingMode.HALF_UP)} ${coinType.symbol}")
             appendLine("Total Fee: ${totalFee.setScale(coinType.decimalPlaces, RoundingMode.HALF_UP)} ${coinType.symbol}")
             appendLine("Recipient Receives: ${recipientAmount.setScale(coinType.decimalPlaces, RoundingMode.HALF_UP)} ${coinType.symbol}")
             appendLine("Developer Wallet: ${developerWalletAddress}")
@@ -132,6 +132,6 @@ data class FeeBreakdown(
      * Get fee summary
      */
     fun getFeeSummary(): String {
-        return "${developerFee.setScale(coinType.decimalPlaces, RoundingMode.HALF_UP)} ${coinType.symbol} (1% developer fee) + ${networkFee.setScale(coinType.decimalPlaces, RoundingMode.HALF_UP)} ${coinType.symbol} network fee"
+        return "${developerFee.setScale(coinType.decimalPlaces, RoundingMode.HALF_UP)} ${coinType.symbol} (0.5% developer fee) + ${networkFee.setScale(coinType.decimalPlaces, RoundingMode.HALF_UP)} ${coinType.symbol} network fee"
     }
 }

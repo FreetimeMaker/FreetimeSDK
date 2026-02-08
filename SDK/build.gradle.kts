@@ -3,14 +3,14 @@ plugins {
 }
 
 group = "com.freetime"
-version = "1.0.1"
+version = "1.0.2"
 
 android {
     namespace = "com.freetime.sdk"
     compileSdk = 36
 
     defaultConfig {
-        minSdk = 24
+        minSdk = 26
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }

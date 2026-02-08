@@ -1,26 +1,21 @@
-<div align="center">
-<h1>Freetime Payment SDK</h1>
-</div>
+# Freetime Payment SDK
 
-<div align="center">
+[![](https://jitpack.io/v/FreetimeMaker/FreetimeSDK.svg)](https://jitpack.io/#FreetimeMaker/FreetimeSDK)
 
-[![JitPack](https://jitpack.io/v/FreetimeMaker/FreetimeSDK.svg)](https://jitpack.io/#FreetimeMaker/FreetimeSDK)
-</div>
-A fully on its own, Open-Source Multi-Cryptocurrency Payment SDK for Android.
+A completely self-contained, open-source multi-cryptocurrency payment SDK for Android.
 
-<div align="center">
-<h2>Features</h2>
-</div>
+## Features
 
 - **Multi-Coin Support**: Bitcoin (BTC), Ethereum (ETH), Litecoin (LTC)
-- **Fully on its own**: No external Dependencies or API-Request required
-- **Local Cryptographie**: All cryptographic Operations will be run locally
-- **Transaction Builder**: Create and sign your Transactions
-- **Open Source**: Fully transparent and  Code
+- **Fully Self-Contained**: No external dependencies or API calls required
+- **Local Cryptography**: All cryptographic operations performed locally
+- **Wallet Management**: Create and manage multiple wallets
+- **Transaction Builder**: Create and sign transactions
+- **Open Source**: Fully transparent and verifiable code
 
-## Unterstützte Kryptowährungen
+## Supported Cryptocurrencies
 
-| Kryptowährung | Symbol | Dezimalstellen |
+| Cryptocurrency | Symbol | Decimal Places |
 |---------------|--------|---------------|
 | Bitcoin | BTC | 8 |
 | Ethereum | ETH | 18 |
@@ -28,7 +23,7 @@ A fully on its own, Open-Source Multi-Cryptocurrency Payment SDK for Android.
 
 ## Installation
 
-Fügen Sie die SDK-Bibliothek zu Ihrem Android-Projekt hinzu:
+Add the SDK library to your Android project:
 
 ```gradle
 dependencies {
@@ -36,9 +31,9 @@ dependencies {
 }
 ```
 
-## Schnellstart
+## Quick Start
 
-### 1. SDK initialisieren
+### 1. Initialize SDK
 
 ```kotlin
 import com.freetime.sdk.payment.FreetimePaymentSDK
@@ -47,27 +42,27 @@ import com.freetime.sdk.payment.CoinType
 val sdk = FreetimePaymentSDK()
 ```
 
-### 2. Wallet erstellen
+### 2. Create Wallet
 
 ```kotlin
-// Bitcoin Wallet erstellen
-val bitcoinWallet = sdk.createWallet(CoinType.BITCOIN, "Mein Bitcoin Wallet")
+// Create Bitcoin wallet
+val bitcoinWallet = sdk.createWallet(CoinType.BITCOIN, "My Bitcoin Wallet")
 
-// Ethereum Wallet erstellen
-val ethereumWallet = sdk.createWallet(CoinType.ETHEREUM, "Mein Ethereum Wallet")
+// Create Ethereum wallet
+val ethereumWallet = sdk.createWallet(CoinType.ETHEREUM, "My Ethereum Wallet")
 
-// Litecoin Wallet erstellen
-val litecoinWallet = sdk.createWallet(CoinType.LITECOIN, "Mein Litecoin Wallet")
+// Create Litecoin wallet
+val litecoinWallet = sdk.createWallet(CoinType.LITECOIN, "My Litecoin Wallet")
 ```
 
-### 3. Guthaben abfragen
+### 3. Check Balance
 
 ```kotlin
 val balance = sdk.getBalance(bitcoinWallet.address)
-println("Bitcoin Guthaben: $balance BTC")
+println("Bitcoin balance: $balance BTC")
 ```
 
-### 4. Kryptowährung senden
+### 4. Send Cryptocurrency
 
 ```kotlin
 import java.math.BigDecimal
@@ -82,10 +77,10 @@ val txHash = sdk.send(
     coinType = CoinType.BITCOIN
 )
 
-println("Transaktion gesendet: $txHash")
+println("Transaction sent: $txHash")
 ```
 
-### 5. Gebührenschätzung
+### 5. Fee Estimation
 
 ```kotlin
 val fee = sdk.getFeeEstimate(
@@ -95,65 +90,65 @@ val fee = sdk.getFeeEstimate(
     coinType = CoinType.BITCOIN
 )
 
-println("Geschätzte Gebühr: $fee BTC")
+println("Estimated fee: $fee BTC")
 ```
 
-## API Referenz
+## API Reference
 
 ### FreetimePaymentSDK
 
-Die Hauptklasse für die Interaktion mit dem Payment SDK.
+The main class for interacting with the payment SDK.
 
-#### Methoden
+#### Methods
 
-- `createWallet(coinType: CoinType, name: String?): Wallet` - Erstellt ein neues Wallet
-- `getBalance(address: String): BigDecimal` - Ruft das Guthaben einer Adresse ab
-- `send(fromAddress: String, toAddress: String, amount: BigDecimal, coinType: CoinType): String` - Sendet Kryptowährung
-- `getFeeEstimate(...): BigDecimal` - Schätzt die Transaktionsgebühr
-- `getAllWallets(): List<Wallet>` - Gibt alle Wallets zurück
-- `getWalletsByCoinType(coinType: CoinType): List<Wallet>` - Gibt Wallets nach Typ zurück
-- `validateAddress(address: String, coinType: CoinType): Boolean` - Validiert eine Adresse
+- `createWallet(coinType: CoinType, name: String?): Wallet` - Creates a new wallet
+- `getBalance(address: String): BigDecimal` - Gets the balance of an address
+- `send(fromAddress: String, toAddress: String, amount: BigDecimal, coinType: CoinType): String` - Sends cryptocurrency
+- `getFeeEstimate(...): BigDecimal` - Estimates transaction fee
+- `getAllWallets(): List<Wallet>` - Returns all wallets
+- `getWalletsByCoinType(coinType: CoinType): List<Wallet>` - Returns wallets by type
+- `validateAddress(address: String, coinType: CoinType): Boolean` - Validates an address
 
 ### Wallet
 
-Repräsentiert ein Kryptowährung-Wallet.
+Represents a cryptocurrency wallet.
 
-#### Eigenschaften
+#### Properties
 
-- `address: String` - Die Wallet-Adresse
-- `coinType: CoinType` - Der Kryptowährungstyp
-- `publicKey: PublicKey` - Der öffentliche Schlüssel
-- `privateKey: PrivateKey` - Der private Schlüssel (sicher aufbewahren!)
+- `address: String` - The wallet address
+- `coinType: CoinType` - The cryptocurrency type
+- `publicKey: PublicKey` - The public key
+- `privateKey: PrivateKey` - The private key (keep secure!)
 
-#### Methoden
+#### Methods
 
-- `getBalance(paymentProvider: PaymentInterface): BigDecimal` - Guthaben abfragen
-- `send(toAddress: String, amount: BigDecimal, paymentProvider: PaymentInterface): Transaction` - Senden
+- `getBalance(paymentProvider: PaymentInterface): BigDecimal` - Check balance
+- `send(toAddress: String, amount: BigDecimal, paymentProvider: PaymentInterface): Transaction` - Send
 
 ### Transaction
 
-Repräsentiert eine Kryptowährungstransaktion.
+Represents a cryptocurrency transaction.
 
-#### Eigenschaften
+#### Properties
 
-- `id: String` - Transaktions-ID
-- `fromAddress: String` - Absenderadresse
-- `toAddress: String` - Empfängeradresse
-- `amount: BigDecimal` - Betrag
-- `fee: BigDecimal` - Gebühr
-- `coinType: CoinType` - Kryptowährungstyp
-- `status: TransactionStatus` - Transaktionsstatus
+- `id: String` - Transaction ID
+- `fromAddress: String` - Sender address
+- `toAddress: String` - Recipient address
+- `amount: BigDecimal` - Amount
+- `fee: BigDecimal` - Fee
+- `coinType: CoinType` - Cryptocurrency type
+- `status: TransactionStatus` - Transaction status
 
-## Sicherheit
+## Security
 
-- **Private Keys**: Private Schlüssel werden niemals außerhalb der App gespeichert oder übertragen
-- **Lokale Verarbeitung**: Alle kryptographischen Operationen finden lokal auf dem Gerät statt
-- **Open Source**: Der Code ist vollständig überprüfbar
-- **Keine externen Abhängigkeiten**: Das SDK benötigt keine externen Dienste oder APIs
+- **Private Keys**: Private keys are never stored or transmitted outside the app
+- **Local Processing**: All cryptographic operations happen locally on the device
+- **Open Source**: The code is fully verifiable
+- **No External Dependencies**: The SDK doesn't require external services or APIs
 
-## Architektur
+## Architecture
 
-Das SDK folgt einer modularen Architektur:
+The SDK follows a modular architecture:
 
 ```
 FreetimePaymentSDK
@@ -172,84 +167,84 @@ FreetimePaymentSDK
     └── CoinType
 ```
 
-## Payment Gateway - Automatische Zahlungsweiterleitung
+## Payment Gateway - Automatic Payment Forwarding
 
-Das SDK enthält einen vollständigen Payment Gateway für die automatische Verarbeitung von Kryptowährungszahlungen.
+The SDK includes a complete payment gateway for automatic processing of cryptocurrency payments.
 
 ### Features
 
-- **Automatische Weiterleitung**: Zahlungen werden automatisch an Ihre Händler-Wallet-Adresse weitergeleitet
-- **Temporäre Zahlungsadressen**: Erstellen Sie für jede Zahlung eine eindeutige temporäre Adresse
-- **Status-Überwachung**: Überwachen Sie den Zahlungsstatus in Echtzeit
-- **Multi-Zahlungs-Verarbeitung**: Verarbeiten Sie mehrere Zahlungen gleichzeitig
-- **Event-Listener**: Erhalten Sie Benachrichtigungen bei Statusänderungen
+- **Automatic Forwarding**: Payments are automatically forwarded to your merchant wallet address
+- **Temporary Payment Addresses**: Create a unique temporary address for each payment
+- **Status Monitoring**: Monitor payment status in real-time
+- **Multi-Payment Processing**: Process multiple payments simultaneously
+- **Event Listeners**: Get notifications for status changes
 
 ### Payment Gateway Setup
 
 ```kotlin
 import com.freetime.sdk.payment.gateway.*
 
-// Ihre Händler Wallet-Adresse (fest im Code definiert)
+// Your merchant wallet address (fixed in code)
 val merchantWallet = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
 
-// Payment Gateway initialisieren
+// Initialize Payment Gateway
 val gateway = PaymentGateway(
     sdk = sdk,
     merchantWalletAddress = merchantWallet,
     merchantCoinType = CoinType.BITCOIN
 )
 
-// Automatische Verarbeitung starten
+// Start automatic processing
 val processor = PaymentProcessor(gateway)
 processor.addPaymentListener(LoggingPaymentListener())
 processor.startProcessing()
 ```
 
-### Zahlung annehmen
+### Accept Payment
 
 ```kotlin
-// Erstelle eine temporäre Zahlungsadresse für den Kunden
+// Create a temporary payment address for the customer
 val paymentRequest = gateway.createPaymentAddress(
     amount = BigDecimal("0.001"), // 0.001 BTC
-    customerReference = "Kunde-12345",
-    description = "Produkt #ABC-123"
+    customerReference = "Customer-12345",
+    description = "Product #ABC-123"
 )
 
-println("Zahlen Sie an: ${paymentRequest.customerAddress}")
-println("Betrag: ${paymentRequest.amount} BTC")
+println("Pay to: ${paymentRequest.customerAddress}")
+println("Amount: ${paymentRequest.amount} BTC")
 ```
 
-### Zahlungsstatus überwachen
+### Monitor Payment Status
 
 ```kotlin
-// Überprüfe den Zahlungsstatus
+// Check payment status
 val status = gateway.checkPaymentStatus(paymentRequest.id)
 val details = gateway.getPaymentDetails(paymentRequest.id)
 
 println("Status: $status")
-println("Aktuelles Guthaben: ${details?.currentBalance}")
-println("Verbleibend: ${details?.remainingAmount}")
+println("Current balance: ${details?.currentBalance}")
+println("Remaining: ${details?.remainingAmount}")
 ```
 
-### Automatische Weiterleitung
+### Automatic Forwarding
 
-Sobald die volle Zahlung auf der temporären Adresse eingeht, wird diese automatisch an Ihre Händler-Wallet-Adresse weitergeleitet:
+Once the full payment is received at the temporary address, it is automatically forwarded to your merchant wallet address:
 
 ```kotlin
-// Der Payment Gateway überwacht automatisch und leitet weiter
-// Sobald status == CONFIRMED, wurde die Zahlung weitergeleitet
+// The payment gateway automatically monitors and forwards
+// Once status == CONFIRMED, the payment has been forwarded
 
 if (status == PaymentStatus.CONFIRMED) {
     val details = gateway.getPaymentDetails(paymentRequest.id)
-    println("Zahlung bestätigt!")
-    println("Weiterleitungs-Hash: ${details?.forwardedTxHash}")
+    println("Payment confirmed!")
+    println("Forwarding hash: ${details?.forwardedTxHash}")
 }
 ```
 
-### Merchant Konfiguration
+### Merchant Configuration
 
 ```kotlin
-// Vorkonfigurierte Merchant-Einstellungen
+// Pre-configured merchant settings
 val config = MerchantPresets.bitcoinConfig(merchantWallet)
 
 val gateway = PaymentGateway(
@@ -259,48 +254,48 @@ val gateway = PaymentGateway(
 )
 ```
 
-## USD Payment Gateway - Automatische Konvertierung
+## USD Payment Gateway - Automatic Conversion
 
-Das SDK unterstützt jetzt USD-Zahlungen mit automatischer Konvertierung in Kryptowährungen!
+The SDK now supports USD payments with automatic conversion to cryptocurrencies!
 
 ### Features
 
-- **USD Eingabe**: Geben Sie Beträge in US-Dollar an
-- **Automatische Konvertierung**: Echtzeit-Wechselkurse von APIs
-- **Multi-API Support**: CoinGecko, CoinCap mit Fallback
-- **Caching**: 1-Minuten-Cache für Performance
-- **Offline-Fallback**: Mock-Kurse wenn API nicht erreichbar
+- **USD Input**: Specify amounts in US Dollars
+- **Automatic Conversion**: Real-time exchange rates from APIs
+- **Multi-API Support**: CoinGecko, CoinCap with fallback
+- **Caching**: 1-minute cache for performance
+- **Offline Fallback**: Mock rates when API is unavailable
 
 ### USD Payment Gateway Setup
 
 ```kotlin
 import com.freetime.sdk.payment.conversion.*
 
-// USD Payment Gateway initialisieren
+// Initialize USD Payment Gateway
 val usdGateway = sdk.createUsdPaymentGateway(
     merchantWalletAddress = "your_wallet_address",
     merchantCoinType = CoinType.BITCOIN
 )
 
-// USD Zahlung annehmen (automatische Konvertierung)
+// Accept USD payment (automatic conversion)
 val usdPayment = usdGateway.createUsdPaymentRequest(
     usdAmount = BigDecimal("100.00"), // $100 USD
-    customerReference = "Kunde-12345",
-    description = "Produkt #ABC-123"
+    customerReference = "Customer-12345",
+    description = "Product #ABC-123"
 )
 
-println("Zahlen Sie ${usdPayment.cryptoAmount} ${usdPayment.coinType.symbol}")
-println("Entspricht $${usdPayment.usdAmount} USD")
-println("Wechselkurs: $${usdPayment.exchangeRate}")
+println("Pay ${usdPayment.cryptoAmount} ${usdPayment.coinType.symbol}")
+println("Equals $${usdPayment.usdAmount} USD")
+println("Exchange rate: $${usdPayment.exchangeRate}")
 ```
 
-### Währungsumrechnung
+### Currency Conversion
 
 ```kotlin
-// Currency Converter für manuelle Konvertierung
+// Currency converter for manual conversion
 val converter = sdk.getCurrencyConverter()
 
-// USD zu Krypto
+// USD to crypto
 val result = converter.convertUsdToCrypto(
     usdAmount = BigDecimal("50.00"),
     coinType = CoinType.BITCOIN
@@ -310,7 +305,7 @@ if (result.success) {
     println("$50.00 USD = ${result.cryptoAmount} BTC")
 }
 
-// Krypto zu USD
+// Crypto to USD
 val reverseResult = converter.convertCryptoToUsd(
     cryptoAmount = BigDecimal("0.001"),
     coinType = CoinType.BITCOIN
@@ -321,49 +316,98 @@ if (reverseResult.success) {
 }
 ```
 
-### Wechselkurs-Überwachung
+### Exchange Rate Monitoring
 
 ```kotlin
-// Aktuelle Wechselkurse abrufen
+// Get current exchange rates
 val rates = converter.getAllExchangeRates()
 rates.forEach { (coinType, rate) ->
     println("1 ${coinType.coinName} = $${rate}")
 }
 ```
 
-### API-Unterstützung
+### API Support
 
-**Unterstützte APIs:**
-- **CoinGecko API** (primär, kostenlos)
-- **CoinCap API** (alternativ)
-- **Offline-Fallback** mit Mock-Kursen
+**Supported APIs:**
+- **CoinGecko API** (primary, free)
+- **CoinCap API** (alternative)
+- **Offline Fallback** with mock rates
 
-**API-Features:**
-- Echtzeit-Wechselkurse
-- Automatische Fehlerbehandlung
-- 1-Minuten-Caching
-- Keine API-Keys erforderlich (CoinGecko)
+**API Features:**
+- Real-time exchange rates
+- Automatic error handling
+- 1-minute caching
+- No API keys required (CoinGecko)
 
-## Beispiel-App
+## Production Environment
 
-Eine vollständige Beispiel-App ist im `examples/` Verzeichnis enthalten, die alle SDK-Funktionen demonstriert:
+For production use, the SDK provides enhanced security and reliability features:
 
-- `ExampleApp.kt` - Grundlegende SDK-Funktionen
-- `PaymentGatewayExample.kt` - Payment Gateway mit automatischer Weiterleitung
-- `UsdPaymentExample.kt` - USD-Zahlungen mit automatischer Konvertierung
+### Production USD Payment Gateway
 
-## Lizenz
+```kotlin
+// Production gateway with configuration
+val config = PaymentGatewayConfig.highVolume()
+val productionGateway = sdk.createProductionUsdPaymentGateway(
+    merchantWalletAddress = "your_wallet_address",
+    merchantCoinType = CoinType.BITCOIN
+)
 
-Dieses Projekt ist unter der MIT-Lizenz veröffentlicht. Siehe die [LICENSE](LICENSE) Datei für Details.
+// Health monitoring
+val health = productionGateway.getGatewayHealthStatus()
+if (!health.isHealthy) {
+    // Activate fallback strategy
+}
 
-## Beiträge
+// Production payment creation
+val payment = productionGateway.createUsdPaymentRequest(
+    usdAmount = BigDecimal("250.00"),
+    customerReference = "PROD-CUST-12345",
+    metadata = mapOf(
+        "product_id" to "premium-product",
+        "customer_tier" to "gold"
+    )
+)
+```
 
-Beiträge sind willkommen! Bitte erstellen Sie einen Pull Request oder öffnen Sie ein Issue.
+### Production Features
+
+- **Multi-API Fallback** for failures
+- **Rate Limiting** against API blocking
+- **Input Validation** against invalid data
+- **Health Monitoring** for system status
+- **Automatic Cleanup** for expired payments
+- **Statistics Tracking** for business intelligence
+- **Thread Safety** for high load
+
+### Production APIs
+
+- **CoinGecko API** (primary)
+- **CoinCap API** (fallback 1)
+- **CoinBase API** (fallback 2)
+- **Mock Rates** (final fallback)
+
+## Example App
+
+A complete example app is included in the `examples/` directory that demonstrates all SDK features:
+
+- `ExampleApp.kt` - Basic SDK functionality
+- `PaymentGatewayExample.kt` - Payment gateway with automatic forwarding
+- `UsdPaymentExample.kt` - USD payments with automatic conversion
+- `ProductionUsdPaymentExample.kt` - Production-ready payment processing
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Contributions are welcome! Please create a Pull Request or open an Issue.
 
 ## Support
 
-Für Fragen und Support, öffnen Sie bitte ein Issue im GitHub Repository.
+For questions and support, please open an Issue in the GitHub repository.
 
 ---
 
-**Wichtiger Hinweis**: Dieses SDK ist für Bildungszwecke und Entwicklung konzipiert. In Produktionsumgebungen sollten Sie zusätzliche Sicherheitsmaßnahmen implementieren und die Transaktionen mit echten Blockchain-Nodes testen.
+**Important Note**: This SDK is designed for educational purposes and development. In production environments, you should implement additional security measures and test transactions with real blockchain nodes.

@@ -127,9 +127,21 @@ class CurrencyConverter {
      */
     private fun getMockRates(): Map<CoinType, BigDecimal> {
         return mapOf(
-            CoinType.BITCOIN to BigDecimal("43250.75"),  // ~$43,250 per BTC
-            CoinType.ETHEREUM to BigDecimal("2280.45"),    // ~$2,280 per ETH  
-            CoinType.LITECOIN to BigDecimal("72.85")       // ~$72.85 per LTC
+            CoinType.BITCOIN to BigDecimal("43250.75"),
+            CoinType.ETHEREUM to BigDecimal("2280.45"),
+            CoinType.LITECOIN to BigDecimal("72.85"),
+            CoinType.BITCOIN_CASH to BigDecimal("245.30"),
+            CoinType.CARDANO to BigDecimal("0.58"),
+            CoinType.POLKADOT to BigDecimal("7.85"),
+            CoinType.CHAINLINK to BigDecimal("14.25"),
+            CoinType.STELLAR to BigDecimal("0.12"),
+            CoinType.DOGECOIN to BigDecimal("0.085"),
+            CoinType.RIPPLE to BigDecimal("0.52"),
+            CoinType.SOLANA to BigDecimal("98.45"),
+            CoinType.AVALANCHE to BigDecimal("35.20"),
+            CoinType.POLYGON to BigDecimal("0.92"),
+            CoinType.BINANCE_COIN to BigDecimal("315.60"),
+            CoinType.TRON to BigDecimal("0.104")
         )
     }
 }

@@ -14,7 +14,7 @@ data class Transaction(
     val coinType: CoinType,
     val rawData: ByteArray,
     val signature: ByteArray? = null,
-    val status: TransactionStatus = TransactionStatus.PENDING,
+    var status: TransactionStatus = TransactionStatus.PENDING,
     val timestamp: Long = System.currentTimeMillis()
 ) {
     override fun equals(other: Any?): Boolean {

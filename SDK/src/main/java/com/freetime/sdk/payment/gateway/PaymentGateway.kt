@@ -83,7 +83,7 @@ class PaymentGateway(
                 val confirmedPayment = ConfirmedPayment(
                     paymentRequest = paymentRequest,
                     receivedAmount = currentBalance,
-                    forwardedTxHash = txHash,
+                    forwardedTxHash = txHash.transaction.id,
                     confirmedAt = System.currentTimeMillis()
                 )
                 

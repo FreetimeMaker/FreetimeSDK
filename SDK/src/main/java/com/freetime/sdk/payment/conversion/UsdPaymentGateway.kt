@@ -3,6 +3,7 @@ package com.freetime.sdk.payment.conversion
 import com.freetime.sdk.payment.*
 import com.freetime.sdk.payment.gateway.*
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -205,15 +206,18 @@ data class UsdPaymentRequest(
     var status: PaymentStatus = PaymentStatus.PENDING,
     val createdAt: Long,
     val expiresAt: Long,
-    val cryptoPaymentRequest: com.freetime.sdk.payment.gateway.PaymentRequest
+    val cryptoPaymentRequest: com.freetime.sdk.payment.gateway.PaymentRequest,
+    val metadata: Map<String, String> = emptyMap(),
+    val feeAmount: BigDecimal = BigDecimal.ZERO,
+    val totalUsdAmount: BigDecimal = usdAmount
 ) {
     /**
      * Get formatted payment info
      */
     fun getFormattedInfo(): String {
-        return "$${usdAmount.setScale(2, BigDecimal.ROUND_HALF_UP)} USD = " +
-               "${cryptoAmount.setScale(8, BigDecimal.ROUND_HALF_UP)} ${coinType.symbol} " +
-               "(Rate: $${exchangeRate.setScale(2, BigDecimal.ROUND_HALF_UP)})"
+        return "$${usdAmount.setScale(2, RoundingMode.HALF_UP)} USD = " +
+               "${cryptoAmount.setScale(8, RoundingMode.HALF_UP)} ${coinType.symbol} " +
+               "(Rate: $${exchangeRate.setScale(2, RoundingMode.HALF_UP)})"
     }
 }
 
@@ -226,7 +230,8 @@ data class ConfirmedUsdPayment(
     val receivedCryptoAmount: BigDecimal,
     val exchangeRate: BigDecimal,
     val forwardedTxHash: String?,
-    val confirmedAt: Long
+    val confirmedAt: Long,
+    val processingFee: BigDecimal = BigDecimal.ZERO
 )
 
 /**
@@ -239,5 +244,6 @@ data class UsdPaymentDetails(
     val currentUsdValue: BigDecimal,
     val remainingUsdValue: BigDecimal,
     val forwardedTxHash: String? = null,
-    val confirmedAt: Long? = null
+    val confirmedAt: Long? = null,
+    val processingFee: BigDecimal = BigDecimal.ZERO
 )

@@ -13,7 +13,8 @@ class UsdPaymentGateway(
     private val sdk: FreetimePaymentSDK,
     private val merchantWalletAddress: String,
     private val merchantCoinType: CoinType,
-    private val currencyConverter: CurrencyConverter = CurrencyConverter()
+    private val currencyConverter: CurrencyConverter = CurrencyConverter(),
+    private val externalWalletManager: ExternalWalletManager = ExternalWalletManager()
 ) {
     
     private val pendingPayments = ConcurrentHashMap<String, UsdPaymentRequest>()
@@ -185,6 +186,69 @@ class UsdPaymentGateway(
      */
     fun getConfirmedUsdPayments(): List<ConfirmedUsdPayment> {
         return confirmedPayments.values.toList()
+    }
+    
+    /**
+     * Create USD payment request with external wallet selection
+     */
+    suspend fun createUsdPaymentWithWalletSelection(
+        usdAmount: BigDecimal,
+        customerReference: String? = null,
+        description: String? = null,
+        providedWallet: com.freetime.sdk.payment.Wallet? = null,
+        forwardToAddress: String? = null
+    ): UsdPaymentRequestWithWalletSelection {
+        
+        // Create base USD payment request
+        val usdPaymentRequest = createUsdPaymentRequest(
+            usdAmount = usdAmount,
+            customerReference = customerReference,
+            description = description,
+            providedWallet = providedWallet,
+            forwardToAddress = forwardToAddress
+        )
+        
+        // Create payment with wallet selection
+        return externalWalletManager.createPaymentWithWalletSelection(
+            usdPaymentRequest = usdPaymentRequest,
+            coinType = merchantCoinType
+        )
+    }
+    
+    /**
+     * Get available external wallet apps for this cryptocurrency
+     */
+    fun getAvailableWalletApps(): List<ExternalWalletApp> {
+        return externalWalletManager.getWalletsForCryptocurrency(merchantCoinType)
+    }
+    
+    /**
+     * Generate payment deep link for specific wallet app
+     */
+    fun generatePaymentDeepLink(
+        walletApp: ExternalWalletApp,
+        usdPaymentRequest: UsdPaymentRequest
+    ): String {
+        return externalWalletManager.generatePaymentDeepLink(
+            walletApp = walletApp,
+            address = usdPaymentRequest.customerAddress,
+            amount = usdPaymentRequest.cryptoAmount,
+            coinType = usdPaymentRequest.coinType
+        )
+    }
+    
+    /**
+     * Check if specific wallet app supports this cryptocurrency
+     */
+    fun isWalletSupported(walletApp: ExternalWalletApp): Boolean {
+        return externalWalletManager.isCoinSupported(walletApp, merchantCoinType)
+    }
+    
+    /**
+     * Get all supported external wallet apps
+     */
+    fun getAllSupportedWalletApps(): List<ExternalWalletApp> {
+        return externalWalletManager.getAllSupportedWallets()
     }
     
     private fun generatePaymentId(): String {

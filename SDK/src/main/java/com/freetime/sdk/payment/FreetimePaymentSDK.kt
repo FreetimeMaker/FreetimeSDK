@@ -1,27 +1,16 @@
 package com.freetime.sdk.payment
 
-import com.freetime.sdk.payment.providers.BitcoinPaymentProvider
-import com.freetime.sdk.payment.providers.EthereumPaymentProvider
-import com.freetime.sdk.payment.providers.LitecoinPaymentProvider
-import com.freetime.sdk.payment.providers.BitcoinCashPaymentProvider
-import com.freetime.sdk.payment.providers.CardanoPaymentProvider
-import com.freetime.sdk.payment.providers.DogecoinPaymentProvider
-import com.freetime.sdk.payment.providers.SolanaPaymentProvider
-import com.freetime.sdk.payment.crypto.BitcoinCryptoUtils
-import com.freetime.sdk.payment.crypto.EthereumCryptoUtils
-import com.freetime.sdk.payment.crypto.LitecoinCryptoUtils
-import com.freetime.sdk.payment.crypto.BitcoinCashCryptoUtils
-import com.freetime.sdk.payment.crypto.CardanoCryptoUtils
-import com.freetime.sdk.payment.crypto.DogecoinCryptoUtils
-import com.freetime.sdk.payment.crypto.SolanaCryptoUtils
-import com.freetime.sdk.payment.conversion.CurrencyConverter
-import com.freetime.sdk.payment.conversion.UsdPaymentGateway
-import com.freetime.sdk.payment.conversion.ProductionCurrencyConverter
-import com.freetime.sdk.payment.conversion.ProductionUsdPaymentGateway
-import com.freetime.sdk.payment.fee.FeeManager
-import com.freetime.sdk.payment.fee.FeeBreakdown
 import com.freetime.sdk.payment.config.UserWalletConfigManager
+import com.freetime.sdk.payment.conversion.*
+import com.freetime.sdk.payment.conversion.ExternalWalletManager
+import com.freetime.sdk.payment.conversion.ExternalWalletApp
+import com.freetime.sdk.payment.gateway.*
+import com.freetime.sdk.payment.providers.*
+import com.freetime.sdk.payment.crypto.*
+import com.freetime.sdk.payment.fee.FeeBreakdown
+import com.freetime.sdk.payment.fee.FeeManager
 import java.math.BigDecimal
+import java.security.KeyPair
 
 /**
  * Main SDK class for multi-cryptocurrency payment processing
@@ -263,6 +252,42 @@ class FreetimePaymentSDK {
      */
     fun getProductionCurrencyConverter(): ProductionCurrencyConverter {
         return ProductionCurrencyConverter()
+    }
+    
+    /**
+     * Create USD Payment Gateway with external wallet integration
+     */
+    fun createUsdPaymentGatewayWithWalletSupport(
+        merchantWalletAddress: String,
+        merchantCoinType: CoinType
+    ): UsdPaymentGateway {
+        return UsdPaymentGateway(this, merchantWalletAddress, merchantCoinType)
+    }
+    
+    /**
+     * Get external wallet manager for wallet app integration
+     */
+    fun getExternalWalletManager(): ExternalWalletManager {
+        return ExternalWalletManager()
+    }
+    
+    /**
+     * Get available wallet apps for specific cryptocurrency
+     */
+    fun getAvailableWalletApps(coinType: CoinType): List<ExternalWalletApp> {
+        return ExternalWalletApp.getWalletsForCoin(coinType)
+    }
+    
+    /**
+     * Generate payment deep link for external wallet
+     */
+    fun generatePaymentDeepLink(
+        walletApp: ExternalWalletApp,
+        address: String,
+        amount: BigDecimal,
+        coinType: CoinType
+    ): String {
+        return walletApp.generatePaymentDeepLink(address, amount, coinType)
     }
     
     /**

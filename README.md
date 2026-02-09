@@ -14,6 +14,8 @@ A completely self-contained, open-source multi-cryptocurrency payment SDK for An
 - **User Wallet Configuration**: Users can configure their own wallet addresses in the app
 - **Cryptocurrency Selection**: Users can choose which cryptocurrencies to accept
 - **Flexible Payment Options**: Support for both SDK-generated and user-provided wallets
+- **External Wallet Integration**: Integration with popular wallet apps (Trust Wallet, MetaMask, Coinbase, etc.)
+- **Deep Link Support**: Automatic deep link generation for external wallet apps
 - **Developer Fee System**: Tiered fee structure (0.05% - 0.5%)
 - **USD Payment Gateway**: Automatic USD to cryptocurrency conversion with real-time rates
 - **Production-Ready**: Enhanced security, health monitoring, and statistics
@@ -268,6 +270,98 @@ The main class for interacting with the payment SDK.
 - `importWalletByAddress(address: String, coinType: CoinType, name: String?): Wallet` - Imports existing wallet by address (watch-only)
 - `importWalletWithPrivateKey(address: String, privateKey: String, coinType: CoinType, name: String?): Wallet` - Imports wallet with private key (full control)
 
+#### External Wallet Integration Methods
+
+- `createUsdPaymentGatewayWithWalletSupport(merchantWalletAddress: String, merchantCoinType: CoinType): UsdPaymentGateway` - Creates USD payment gateway with external wallet support
+- `getExternalWalletManager(): ExternalWalletManager` - Gets external wallet manager for wallet app integration
+- `getAvailableWalletApps(coinType: CoinType): List<ExternalWalletApp>` - Gets available wallet apps for specific cryptocurrency
+- `generatePaymentDeepLink(walletApp: ExternalWalletApp, address: String, amount: BigDecimal, coinType: CoinType): String` - Generates deep link for external wallet
+
+### UsdPaymentGateway (Enhanced)
+
+#### Additional Methods for External Wallet Integration
+
+- `createUsdPaymentWithWalletSelection(...): UsdPaymentRequestWithWalletSelection` - Creates USD payment request with wallet selection
+- `getAvailableWalletApps(): List<ExternalWalletApp>` - Gets available wallet apps for merchant's cryptocurrency
+- `generatePaymentDeepLink(walletApp: ExternalWalletApp, usdPaymentRequest: UsdPaymentRequest): String` - Generates deep link for specific wallet
+- `isWalletSupported(walletApp: ExternalWalletApp): Boolean` - Checks if wallet app supports merchant's cryptocurrency
+- `getAllSupportedWalletApps(): List<ExternalWalletApp>` - Gets all supported external wallet apps
+
+### ExternalWalletManager
+
+#### Methods
+
+- `createPaymentWithWalletSelection(usdPaymentRequest: UsdPaymentRequest, coinType: CoinType): UsdPaymentRequestWithWalletSelection` - Creates payment with wallet selection
+- `getAllSupportedWallets(): List<ExternalWalletApp>` - Gets all supported wallet apps
+- `getWalletsForCryptocurrency(coinType: CoinType): List<ExternalWalletApp>` - Gets wallet apps for specific cryptocurrency
+- `generatePaymentDeepLink(walletApp: ExternalWalletApp, address: String, amount: BigDecimal, coinType: CoinType): String` - Generates payment deep link
+- `isCoinSupported(walletApp: ExternalWalletApp, coinType: CoinType): Boolean` - Checks if wallet supports cryptocurrency
+- `getWalletByPackageName(packageName: String): ExternalWalletApp?` - Gets wallet app by package name
+
+### ExternalWalletApp
+
+#### Properties
+
+- `name: String` - Display name of the wallet app
+- `packageName: String` - Android package name
+- `supportedCoins: List<CoinType>` - List of supported cryptocurrencies
+- `deepLinkScheme: String` - Deep link scheme for the wallet
+- `iconUrl: String?` - Optional URL for wallet icon
+
+#### Methods
+
+- `generatePaymentDeepLink(address: String, amount: BigDecimal, coinType: CoinType): String` - Generates deep link for payment
+- `isInstalled(): Boolean` - Checks if wallet app is installed
+
+#### Predefined Wallet Apps
+
+- `ExternalWalletApp.TRUST_WALLET` - Trust Wallet
+- `ExternalWalletApp.META_MASK` - MetaMask
+- `ExternalWalletApp.COINBASE_WALLET` - Coinbase Wallet
+- `ExternalWalletApp.BINANCE_WALLET` - Binance Wallet
+- `ExternalWalletApp.EXODUS` - Exodus
+- `ExternalWalletApp.ATOMIC_WALLET` - Atomic Wallet
+- `ExternalWalletApp.LEDGER_LIVE` - Ledger Live
+- `ExternalWalletApp.TREZOR_SUITE` - Trezor Suite
+- `ExternalWalletApp.MYCELIUM` - Mycelium
+- `ExternalWalletApp.ELECTRUM` - Electrum
+- `ExternalWalletApp.BRAVE_WALLET` - Brave Wallet
+- `ExternalWalletApp.RAINBOW_WALLET` - Rainbow Wallet
+- `ExternalWalletApp.WALLET_CONNECT` - WalletConnect
+- `ExternalWalletApp.PHANTOM_WALLET` - Phantom Wallet
+- `ExternalWalletApp.SOLFLARE_WALLET` - Solflare Wallet
+- `ExternalWalletApp.YOROI_WALLET` - Yoroi Wallet
+- `ExternalWalletApp.ADALITE_WALLET` - AdaLite Wallet
+- `ExternalWalletApp.TRON_WALLET` - TronWallet
+- `ExternalWalletApp.KLEVER_WALLET` - Klever Wallet
+- `ExternalWalletApp.BITKEEP_WALLET` - BitKeep Wallet
+- `ExternalWalletApp.SAFE_WALLET` - Safe Wallet
+- `ExternalWalletApp.ARGENT_WALLET` - Argent Wallet
+- `ExternalWalletApp.ZERION_WALLET` - Zerion Wallet
+- `ExternalWalletApp.IM_TOKEN_WALLET` - imToken Wallet
+- `ExternalWalletApp.MATH_WALLET` - MathWallet
+- `ExternalWalletApp.TOKEN_POCKET` - TokenPocket
+
+#### Companion Methods
+
+- `getAllWalletApps(): List<ExternalWalletApp>` - Gets all predefined wallet apps
+- `getWalletsForCoin(coinType: CoinType): List<ExternalWalletApp>` - Gets wallets supporting specific coin
+
+### UsdPaymentRequestWithWalletSelection
+
+#### Properties
+
+- `usdPaymentRequest: UsdPaymentRequest` - Base USD payment request
+- `availableWalletApps: List<ExternalWalletApp>` - Available wallet apps
+- `selectedWalletApp: ExternalWalletApp?` - User-selected wallet app
+- `walletSelectionRequired: Boolean` - Whether wallet selection is required
+
+#### Methods
+
+- `getPaymentDeepLink(): String?` - Gets payment deep link for selected wallet
+- `selectWallet(walletApp: ExternalWalletApp): UsdPaymentRequestWithWalletSelection` - Selects wallet app
+- `getFormattedInfo(): String` - Gets formatted payment info with wallet selection
+
 ### Wallet
 
 Represents a cryptocurrency wallet.
@@ -445,6 +539,188 @@ val fullWallet = sdk.importWalletWithPrivateKey(
     coinType = CoinType.ETHEREUM,
     name = "Imported Ethereum Wallet"
 )
+```
+
+## External Wallet Integration
+
+The SDK supports integration with popular external cryptocurrency wallet apps, allowing users to pay using their preferred wallet application.
+
+### Features
+
+- **Multi-Wallet Support**: Integration with Trust Wallet, MetaMask, Coinbase, Binance, Exodus, and Atomic Wallet
+- **Automatic Detection**: Automatically shows only wallets that support the selected cryptocurrency
+- **Deep Link Integration**: Generates deep links to open wallet apps directly with payment details
+- **Installation Handling**: Redirects users to app store if wallet is not installed
+- **Customizable**: Support for custom wallet apps and deep link schemes
+
+### Supported Wallet Apps
+
+| Wallet App | Package Name | Supported Coins | Deep Link Scheme |
+|-------------|---------------|------------------|-------------------|
+| Trust Wallet | com.wallet.crypto.trustapp | BTC, ETH, LTC, BCH, DOGE, MATIC, BNB | `trust://` |
+| MetaMask | io.metamask | ETH, MATIC, BNB | `metamask://` |
+| Coinbase Wallet | com.coinbase.android | BTC, ETH, LTC, BCH, DOGE | `cbwallet://` |
+| Binance Wallet | com.binance.dev | All supported coins | `binance://` |
+| Exodus | exodusmovement.exodus | BTC, ETH, LTC, BCH, DOGE, SOL | `exodus://` |
+| Atomic Wallet | co.atomicwallet | All supported coins | `atomic://` |
+| Ledger Live | com.ledger.live | BTC, ETH, LTC, BCH, DOGE, MATIC, BNB, SOL, TRX | `ledgerlive://` |
+| Trezor Suite | satoshilabs.trezor.trezor-suite | BTC, ETH, LTC, BCH, DOGE, MATIC, BNB | `trezor://` |
+| Mycelium | com.mycelium.wallet | BTC, LTC, ETH | `mycelium://` |
+| Electrum | org.electrum.electrum | BTC, LTC, BCH | `electrum://` |
+| Brave Wallet | com.brave.browser | ETH, MATIC, BNB | `brave://` |
+| Rainbow Wallet | me.rainbow | ETH, MATIC, BNB | `rainbow://` |
+| WalletConnect | com.walletconnect | ETH, MATIC, BNB, SOL, TRX | `wc://` |
+| Phantom Wallet | app.phantom | SOL, ETH, MATIC | `phantom://` |
+| Solflare Wallet | com.solflare.mobile | SOL, ETH | `solflare://` |
+| Yoroi Wallet | io.emurgo.yoroi | ADA | `yoroi://` |
+| AdaLite Wallet | com.adalite.wallet | ADA | `adalite://` |
+| TronWallet | com.tronlinkpro.wallet | TRX, BTC, ETH | `tronlink://` |
+| Klever Wallet | com.klever.wallet | TRX, BTC, ETH, LTC | `klever://` |
+| BitKeep Wallet | com.bitkeep.wallet | All supported coins | `bitkeep://` |
+| Safe Wallet | io.gnosis.safe | ETH, MATIC, BNB | `safe://` |
+| Argent Wallet | io.argent.wallet | ETH, MATIC, BNB | `argent://` |
+| Zerion Wallet | io.zerion.wallet | ETH, MATIC, BNB, SOL | `zerion://` |
+| imToken Wallet | im.token.im | BTC, ETH, LTC, BCH, DOGE, BNB, MATIC, SOL, TRX | `imtokenv2://` |
+| MathWallet | com.mathwallet.android | All supported coins | `mathwallet://` |
+| TokenPocket | com.tokenpocket.pocket | BTC, ETH, LTC, BCH, DOGE, BNB, MATIC, SOL, TRX | `tpoutside://` |
+
+### Basic Usage
+
+```kotlin
+import com.freetime.sdk.payment.conversion.*
+
+// Create USD payment gateway with wallet support
+val gateway = sdk.createUsdPaymentGatewayWithWalletSupport(
+    merchantWalletAddress = "your_wallet_address",
+    merchantCoinType = CoinType.BITCOIN
+)
+
+// Create payment with wallet selection
+val paymentWithWalletSelection = gateway.createUsdPaymentWithWalletSelection(
+    usdAmount = BigDecimal("100.00"),
+    customerReference = "Customer-12345",
+    description = "Product Purchase"
+)
+
+// Get available wallet apps for Bitcoin
+val availableWallets = gateway.getAvailableWalletApps()
+```
+
+### Wallet Selection Dialog
+
+```kotlin
+// Show wallet selection dialog
+fun showWalletSelectionDialog(paymentRequest: UsdPaymentRequestWithWalletSelection) {
+    val dialog = WalletSelectionDialog(
+        title = "Wählen Sie Ihre Wallet-App",
+        wallets = paymentRequest.availableWalletApps,
+        onWalletSelected = { selectedWallet ->
+            val updatedPayment = paymentRequest.selectWallet(selectedWallet)
+            val deepLink = updatedPayment.getPaymentDeepLink()
+            
+            // Open wallet app with deep link
+            openDeepLink(deepLink)
+            
+            // Start payment status monitoring
+            startPaymentMonitoring(updatedPayment.usdPaymentRequest.id)
+        },
+        onInstallWallet = { wallet ->
+            // Redirect to app store
+            openAppStore(wallet.packageName)
+        }
+    )
+    dialog.show()
+}
+```
+
+### Deep Link Generation
+
+```kotlin
+// Generate deep link for specific wallet
+val trustWallet = ExternalWalletApp.TRUST_WALLET
+val deepLink = gateway.generatePaymentDeepLink(
+    walletApp = trustWallet,
+    usdPaymentRequest = paymentRequest
+)
+
+// Example deep link: trust://send?address=1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa&amount=0.001&asset=btc
+```
+
+### Custom Wallet Integration
+
+```kotlin
+// Add custom wallet app
+val customWallet = ExternalWalletApp(
+    name = "My Custom Wallet",
+    packageName = "com.mycompany.wallet",
+    supportedCoins = listOf(CoinType.BITCOIN, CoinType.ETHEREUM),
+    deepLinkScheme = "mywallet"
+)
+
+// Check if wallet supports cryptocurrency
+val isSupported = gateway.isWalletSupported(customWallet)
+
+// Generate custom deep link
+val customDeepLink = customWallet.generatePaymentDeepLink(
+    address = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+    amount = BigDecimal("0.001"),
+    coinType = CoinType.BITCOIN
+)
+```
+
+### Error Handling
+
+```kotlin
+fun handleWalletPaymentErrors(paymentRequest: UsdPaymentRequestWithWalletSelection) {
+    try {
+        // Check if wallets are available
+        if (paymentRequest.availableWalletApps.isEmpty()) {
+            showErrorMessage("Keine unterstützten Wallet-Apps gefunden")
+            return
+        }
+        
+        // Check if selected wallet is installed
+        paymentRequest.selectedWalletApp?.let { selectedWallet ->
+            if (!selectedWallet.isInstalled()) {
+                showInstallWalletDialog(selectedWallet)
+                return
+            }
+        }
+        
+        // Generate deep link
+        val deepLink = paymentRequest.getPaymentDeepLink()
+        openDeepLink(deepLink)
+        
+    } catch (e: SecurityException) {
+        showErrorMessage("Berechtigungen fehlen für Deep Link Öffnung")
+    } catch (e: ActivityNotFoundException) {
+        showErrorMessage("Keine App gefunden für diesen Deep Link")
+    }
+}
+```
+
+### Payment Status Monitoring
+
+```kotlin
+// Monitor payment status after wallet opens
+fun startPaymentMonitoring(paymentId: String) {
+    CoroutineScope(Dispatchers.IO).launch {
+        while (true) {
+            val status = gateway.checkUsdPaymentStatus(paymentId)
+            updatePaymentUI(status)
+            
+            if (status == PaymentStatus.CONFIRMED) {
+                showPaymentSuccess()
+                break
+            } else if (status == PaymentStatus.EXPIRED) {
+                showPaymentExpired()
+                break
+            }
+            
+            delay(5000) // Check every 5 seconds
+        }
+    }
+}
 ```
 
 ## Architecture
@@ -733,6 +1009,7 @@ A complete example app is included in the `examples/` directory that demonstrate
 - `CryptocurrencySelectionExample.kt` - Cryptocurrency selection and payment options
 - `WalletImportExample.kt` - Import existing wallets by address or private key
 - `RequiredWalletConfigExample.kt` - Required wallet configuration for all cryptocurrencies
+- `ExternalWalletIntegrationExample.kt` - External wallet app integration and deep link generation
 
 ## License
 

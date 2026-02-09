@@ -32,12 +32,15 @@ class PaymentGatewayExample {
         processor.addPaymentListener(LoggingPaymentListener())
         processor.startProcessing()
         
-        // 3. Zahlungsanfrage für Kunden erstellen
+        // 3. Zahlungsanfrage für Kunden erstellen (Beispiel: App stellt eigenes Wallet bereit)
         println("3. Erstelle Zahlungsanfrage...")
+        // App/Benutzer könnte ein bestehendes Wallet bereitstellen; hier demonstrativ per SDK erzeugt
+        val customerProvidedWallet = sdk.createWallet(CoinType.BITCOIN, "Kunden-Wallet-1")
         val paymentRequest = bitcoinGateway.createPaymentAddress(
             amount = BigDecimal("0.001"),
             customerReference = "Kunde-12345",
-            description = "Produkt #ABC-123"
+            description = "Produkt #ABC-123",
+            providedWallet = customerProvidedWallet
         )
         
         println("Zahlungsanfrage erstellt:")

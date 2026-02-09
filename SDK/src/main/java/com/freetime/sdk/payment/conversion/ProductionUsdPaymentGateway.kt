@@ -31,7 +31,11 @@ class ProductionUsdPaymentGateway(
         usdAmount: BigDecimal,
         customerReference: String? = null,
         description: String? = null,
-        metadata: Map<String, String> = emptyMap()
+        metadata: Map<String, String> = emptyMap(),
+        /** Optional: Externes Wallet, das der App-Besitzer bereitstellt. */
+        providedWallet: com.freetime.sdk.payment.Wallet? = null,
+        /** Optionale externe Adresse, an die empfangene Gelder weitergeleitet werden sollen */
+        forwardToAddress: String? = null
     ): UsdPaymentRequest {
         
         return paymentMutex.withLock {
@@ -73,7 +77,9 @@ class ProductionUsdPaymentGateway(
                 ).createPaymentAddress(
                     amount = totalConversionResult.cryptoAmount!!,
                     customerReference = customerReference,
-                    description = description
+                    description = description,
+                    providedWallet = providedWallet,
+                    forwardToAddress = forwardToAddress
                 )
                 
                 val paymentId = generatePaymentId()

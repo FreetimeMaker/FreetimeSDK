@@ -49,7 +49,7 @@ allprojects {
 
 ```gradle
 dependencies {
-    implementation 'com.github.FreetimeMaker:FreetimeSDK:v1.0.1'
+    implementation 'com.github.FreetimeMaker:FreetimeSDK:v1.0.2'
 }
 ```
 
@@ -338,7 +338,7 @@ processor.startProcessing()
 ### Accept Payment
 
 ```kotlin
-// Create a temporary payment address for the customer
+// Option A: SDK creates a temporary wallet (default behavior)
 val paymentRequest = gateway.createPaymentAddress(
     amount = BigDecimal("0.001"), // 0.001 BTC
     customerReference = "Customer-12345",
@@ -347,6 +347,21 @@ val paymentRequest = gateway.createPaymentAddress(
 
 println("Pay to: ${paymentRequest.customerAddress}")
 println("Amount: ${paymentRequest.amount} BTC")
+
+// Option B: The host app can provide an existing Wallet object instead of
+// letting the SDK generate a new one. This is useful when the app manages
+// user wallets itself and wants incoming payments to go to a known address.
+val customerWallet = sdk.createWallet(CoinType.BITCOIN, "Customer Wallet") // or app-provided
+val paymentRequestWithProvidedWallet = gateway.createPaymentAddress(
+    amount = BigDecimal("0.001"),
+    customerReference = "Customer-12345",
+    description = "Product #ABC-123",
+    providedWallet = customerWallet, // optional: use app's wallet
+    forwardToAddress = "bc1qexternalwalletaddress..." // optional: forward after confirmation
+)
+
+println("Pay to: ${paymentRequestWithProvidedWallet.customerAddress}")
+println("Amount: ${paymentRequestWithProvidedWallet.amount} BTC")
 ```
 
 ### Monitor Payment Status
@@ -375,6 +390,8 @@ if (status == PaymentStatus.CONFIRMED) {
     println("Forwarding hash: ${details?.forwardedTxHash}")
 }
 ```
+
+Hinweis: Falls `forwardToAddress` bei `createPaymentAddress` gesetzt wurde, wird an diese Adresse weitergeleitet statt an `merchantWalletAddress`.
 
 ### Merchant Configuration
 
@@ -423,6 +440,20 @@ println("Pay ${usdPayment.cryptoAmount} ${usdPayment.coinType.symbol}")
 println("Equals $${usdPayment.usdAmount} USD")
 println("Exchange rate: $${usdPayment.exchangeRate}")
 ```
+
+// Or: provide a Wallet and optional forwarding address when creating the USD payment
+val customerEthWallet = sdk.createWallet(CoinType.ETHEREUM, "Customer ETH Wallet")
+val usdPaymentWithProvidedWallet = usdGateway.createUsdPaymentRequest(
+    usdAmount = BigDecimal("100.00"),
+    customerReference = "Customer-12345",
+    description = "Product #ABC-123",
+    providedWallet = customerEthWallet, // optional
+    forwardToAddress = "0xExternalForwardAddress..." // optional forwarding address
+)
+
+println("Pay ${usdPaymentWithProvidedWallet.cryptoAmount} ${usdPaymentWithProvidedWallet.coinType.symbol}")
+println("Equals $${usdPaymentWithProvidedWallet.usdAmount} USD")
+println("Exchange rate: $${usdPaymentWithProvidedWallet.exchangeRate}")
 
 ### Currency Conversion
 

@@ -25,7 +25,11 @@ class UsdPaymentGateway(
     suspend fun createUsdPaymentRequest(
         usdAmount: BigDecimal,
         customerReference: String? = null,
-        description: String? = null
+        description: String? = null,
+        /** Optional: Externes Wallet, das der App-Besitzer bereitstellt. */
+        providedWallet: com.freetime.sdk.payment.Wallet? = null,
+        /** Optionale externe Adresse, an die empfangene Gelder weitergeleitet werden sollen */
+        forwardToAddress: String? = null
     ): UsdPaymentRequest {
         
         // Convert USD to target cryptocurrency
@@ -41,7 +45,9 @@ class UsdPaymentGateway(
         ).createPaymentAddress(
             amount = conversionResult.cryptoAmount!!,
             customerReference = customerReference,
-            description = description
+            description = description,
+            providedWallet = providedWallet,
+            forwardToAddress = forwardToAddress
         )
         
         val usdPaymentRequest = UsdPaymentRequest(

@@ -24,11 +24,15 @@ class PaymentGateway(
     suspend fun createPaymentAddress(
         amount: BigDecimal,
         customerReference: String? = null,
-        description: String? = null
+        description: String? = null,
+        /** Optional: Externes Wallet, das der App-Besitzer bereitstellt. Wenn null, wird ein temporäres Wallet generiert. */
+        providedWallet: Wallet? = null,
+        /** Optionale externe Adresse, an die empfangene Gelder weitergeleitet werden sollen */
+        forwardToAddress: String? = null
     ): PaymentRequest {
         
-        // Erstelle ein temporäres Wallet für diese Zahlung
-        val tempWallet = sdk.createWallet(merchantCoinType, "Payment-$customerReference")
+        // Verwende das bereitgestellte Wallet oder erstelle ein temporäres Wallet
+        val tempWallet = providedWallet ?: sdk.createWallet(merchantCoinType, "Payment-$customerReference")
         
         val paymentRequest = PaymentRequest(
             id = generatePaymentId(),
@@ -39,6 +43,7 @@ class PaymentGateway(
             customerReference = customerReference,
             description = description,
             status = PaymentStatus.PENDING,
+            forwardToAddress = forwardToAddress,
             createdAt = System.currentTimeMillis(),
             expiresAt = System.currentTimeMillis() + PAYMENT_TIMEOUT
         )
@@ -72,9 +77,10 @@ class PaymentGateway(
         if (currentBalance >= paymentRequest.amount) {
             // Zahlung erhalten - leite an Händler weiter
             try {
+                val destination = paymentRequest.forwardToAddress ?: merchantWalletAddress
                 val txHash = sdk.send(
                     fromAddress = pendingPayment.tempWallet.address,
-                    toAddress = merchantWalletAddress,
+                    toAddress = destination,
                     amount = paymentRequest.amount,
                     coinType = merchantCoinType
                 )
@@ -182,6 +188,8 @@ data class PaymentRequest(
     val customerReference: String? = null,
     val description: String? = null,
     var status: PaymentStatus = PaymentStatus.PENDING,
+    /** Falls gesetzt, werden empfangene Gelder an diese Adresse weitergeleitet. */
+    val forwardToAddress: String? = null,
     val createdAt: Long,
     val expiresAt: Long
 )

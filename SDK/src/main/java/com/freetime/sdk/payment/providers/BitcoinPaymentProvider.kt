@@ -94,14 +94,7 @@ class BitcoinPaymentProvider : PaymentInterface {
             return false
         }
         
-        // Basic Bitcoin address validation
-        if (address.length < 26 || address.length > 35) {
-            return false
-        }
-        
-        // Check if it contains only valid Base58 characters
-        val validChars = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
-        return address.all { it in validChars }
+        return BitcoinCryptoUtils.validateAddress(address)
     }
     
     override suspend fun getFeeEstimate(

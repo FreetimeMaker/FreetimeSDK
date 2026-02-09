@@ -91,14 +91,7 @@ class EthereumPaymentProvider : PaymentInterface {
             return false
         }
         
-        // Basic Ethereum address validation
-        if (!address.startsWith("0x") || address.length != 42) {
-            return false
-        }
-        
-        // Check if it contains only valid hex characters
-        val hexPart = address.substring(2)
-        return hexPart.all { it in "0123456789abcdefABCDEF" }
+        return EthereumCryptoUtils.validateAddress(address)
     }
     
     override suspend fun getFeeEstimate(

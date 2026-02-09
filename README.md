@@ -1,13 +1,20 @@
 # Freetime Payment SDK
 
 [![](https://jitpack.io/v/FreetimeMaker/FreetimeSDK.svg)](https://jitpack.io/#FreetimeMaker/FreetimeSDK)
+![Daily download statistics](https://jitpack.io/v/FreetimeMaker/FreetimeSDK/day.svg)
+![Weekly download statistics](https://jitpack.io/v/FreetimeMaker/FreetimeSDK/week.svg)
+![Monthly download statistics](https://jitpack.io/v/FreetimeMaker/FreetimeSDK/month.svg)
+![Total download statistics](https://jitpack.io/v/FreetimeMaker/FreetimeSDK/total.svg)
 
 A completely self-contained, open-source multi-cryptocurrency payment SDK for Android.
 
 ## Features
 
 - **Multi-Coin Support**: 9 cryptocurrencies including Bitcoin (BTC), Ethereum (ETH), Litecoin (LTC), Bitcoin Cash (BCH), Dogecoin (DOGE), Solana (SOL), Polygon (MATIC), Binance Coin (BNB), and Tron (TRX)
-- **Developer Fee System**: Tiered fee structure (0.05% - 0.5%) with app.ncwallet.net-compatible wallets
+- **User Wallet Configuration**: Users can configure their own wallet addresses in the app
+- **Cryptocurrency Selection**: Users can choose which cryptocurrencies to accept
+- **Flexible Payment Options**: Support for both SDK-generated and user-provided wallets
+- **Developer Fee System**: Tiered fee structure (0.05% - 0.5%)
 - **USD Payment Gateway**: Automatic USD to cryptocurrency conversion with real-time rates
 - **Production-Ready**: Enhanced security, health monitoring, and statistics
 - **Fully Self-Contained**: No external dependencies or API calls required
@@ -76,7 +83,38 @@ import com.freetime.sdk.payment.CoinType
 val sdk = FreetimePaymentSDK()
 ```
 
-### 2. Create Wallet
+### 2. Configure User Wallet Addresses
+
+```kotlin
+// Set user's Bitcoin wallet address
+sdk.setUserWalletAddress(
+    coinType = CoinType.BITCOIN,
+    address = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+    name = "My Bitcoin Wallet"
+)
+
+// Set user's Ethereum wallet address
+sdk.setUserWalletAddress(
+    coinType = CoinType.ETHEREUM,
+    address = "0x742d35Cc6634C0532925a3b8D4C9db96C4b4Db45",
+    name = "My Ethereum Wallet"
+)
+```
+
+### 3. Select Which Cryptocurrencies to Accept
+
+```kotlin
+// User selects which cryptocurrencies to accept
+val acceptedCryptocurrencies = setOf(
+    CoinType.BITCOIN,
+    CoinType.ETHEREUM,
+    CoinType.LITECOIN
+)
+
+sdk.setAcceptedCryptocurrencies(acceptedCryptocurrencies)
+```
+
+### 4. Create Wallet (Optional - SDK-generated)
 
 ```kotlin
 // Create Bitcoin wallet
@@ -89,14 +127,14 @@ val ethereumWallet = sdk.createWallet(CoinType.ETHEREUM, "My Ethereum Wallet")
 val litecoinWallet = sdk.createWallet(CoinType.LITECOIN, "My Litecoin Wallet")
 ```
 
-### 3. Check Balance
+### 5. Check Balance
 
 ```kotlin
 val balance = sdk.getBalance(bitcoinWallet.address)
 println("Bitcoin balance: $balance BTC")
 ```
 
-### 4. Send Cryptocurrency
+### 6. Send Cryptocurrency
 
 ```kotlin
 import java.math.BigDecimal
@@ -210,6 +248,26 @@ The main class for interacting with the payment SDK.
 - `getWalletsByCoinType(coinType: CoinType): List<Wallet>` - Returns wallets by type
 - `validateAddress(address: String, coinType: CoinType): Boolean` - Validates an address
 
+#### User Wallet Configuration Methods
+
+- `setUserWalletAddress(coinType: CoinType, address: String, name: String?, isAccepted: Boolean): Unit` - Sets user wallet address for cryptocurrency
+- `getUserWalletAddress(coinType: CoinType): String?` - Gets user's configured wallet address
+- `hasUserWallet(coinType: CoinType): Boolean` - Checks if user has configured wallet for cryptocurrency
+- `setAcceptedCryptocurrencies(cryptocurrencies: Set<CoinType>): Unit` - Sets which cryptocurrencies user wants to accept
+- `getAcceptedCryptocurrencies(): Set<CoinType>` - Gets all accepted cryptocurrencies
+- `isCryptocurrencyAccepted(coinType: CoinType): Boolean` - Checks if user accepts specific cryptocurrency
+- `addAcceptedCryptocurrency(coinType: CoinType): Unit` - Adds cryptocurrency to accepted list
+- `removeAcceptedCryptocurrency(coinType: CoinType): Unit` - Removes cryptocurrency from accepted list
+- `getSupportedPaymentOptions(): List<CoinType>` - Gets cryptocurrencies user can receive payments in
+- `getAvailableCryptocurrencies(): List<CoinType>` - Gets all available cryptocurrencies for selection
+- `hasAnyAcceptedWallet(): Boolean` - Checks if user has any accepted cryptocurrency configured
+- `validateHasAcceptedWallets(): Boolean` - Validates that user has at least one accepted cryptocurrency
+
+#### Wallet Import Methods
+
+- `importWalletByAddress(address: String, coinType: CoinType, name: String?): Wallet` - Imports existing wallet by address (watch-only)
+- `importWalletWithPrivateKey(address: String, privateKey: String, coinType: CoinType, name: String?): Wallet` - Imports wallet with private key (full control)
+
 ### Wallet
 
 Represents a cryptocurrency wallet.
@@ -274,12 +332,120 @@ Contains detailed fee information for a transaction.
 - `getFeeSummary(): String` - Gets fee summary string
 - `getFeeTier(): String` - Gets transaction tier
 
-## Security
+## User Wallet Configuration
 
-- **Private Keys**: Private keys are never stored or transmitted outside the app
-- **Local Processing**: All cryptographic operations happen locally on the device
-- **Open Source**: The code is fully verifiable
-- **No External Dependencies**: The SDK doesn't require external services or APIs
+The SDK allows users to configure their own wallet addresses and select which cryptocurrencies they want to accept.
+
+### Features
+
+- **User Wallet Addresses**: Users can input their own wallet addresses in the app
+- **Cryptocurrency Selection**: Users can choose which cryptocurrencies to accept payments in
+- **Flexible Configuration**: Support for both individual and bulk wallet configuration
+- **Address Validation**: Automatic validation of wallet address formats
+- **Dynamic Management**: Add/remove cryptocurrencies at runtime
+
+### Basic Setup
+
+```kotlin
+// Configure user wallet addresses
+sdk.setUserWalletAddress(
+    coinType = CoinType.BITCOIN,
+    address = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+    name = "My Bitcoin Wallet"
+)
+
+sdk.setUserWalletAddress(
+    coinType = CoinType.ETHEREUM,
+    address = "0x742d35Cc6634C0532925a3b8D4C9db96C4b4Db45",
+    name = "My Ethereum Wallet"
+)
+```
+
+### Cryptocurrency Selection
+
+```kotlin
+// User selects which cryptocurrencies to accept
+val acceptedCryptocurrencies = setOf(
+    CoinType.BITCOIN,
+    CoinType.ETHEREUM,
+    CoinType.LITECOIN
+)
+
+sdk.setAcceptedCryptocurrencies(acceptedCryptocurrencies)
+
+// Check which cryptocurrencies are accepted
+val isBitcoinAccepted = sdk.isCryptocurrencyAccepted(CoinType.BITCOIN)
+val acceptedCryptos = sdk.getAcceptedCryptocurrencies()
+
+// Get supported payment options (configured + accepted)
+val paymentOptions = sdk.getSupportedPaymentOptions()
+```
+
+### Advanced Configuration
+
+```kotlin
+// Add/remove cryptocurrencies dynamically
+sdk.addAcceptedCryptocurrency(CoinType.DOGECOIN)
+sdk.removeAcceptedCryptocurrency(CoinType.LITECOIN)
+
+// Check configuration status
+val hasBitcoinWallet = sdk.hasUserWallet(CoinType.BITCOIN)
+val hasAnyAcceptedWallet = sdk.hasAnyAcceptedWallet()
+
+// Validate configuration before payments
+try {
+    sdk.validateHasAcceptedWallets()
+    // Proceed with payment processing
+} catch (e: Exception) {
+    // Show configuration UI to user
+}
+```
+
+### Payment Gateway with User Wallets
+
+```kotlin
+// Create USD payment gateway with user's configured wallet
+val userBitcoinAddress = sdk.getUserWalletAddress(CoinType.BITCOIN)
+if (userBitcoinAddress != null && sdk.isCryptocurrencyAccepted(CoinType.BITCOIN)) {
+    val gateway = sdk.createUsdPaymentGateway(
+        merchantWalletAddress = userBitcoinAddress,
+        merchantCoinType = CoinType.BITCOIN
+    )
+    
+    val payment = gateway.createUsdPaymentRequest(
+        usdAmount = BigDecimal("100.00"),
+        customerReference = "Customer-12345",
+        description = "Product Purchase"
+    )
+    
+    println("Pay ${payment.cryptoAmount} BTC to $userBitcoinAddress")
+}
+
+// Create gateways for all accepted cryptocurrencies
+val allGateways = sdk.createUsdPaymentGatewaysForAccepted()
+allGateways.forEach { (coinType, gateway) ->
+    println("Gateway ready for ${coinType.coinName}")
+}
+```
+
+### Wallet Import
+
+```kotlin
+// Import existing wallet by address (watch-only)
+val importedWallet = sdk.importWalletByAddress(
+    address = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+    coinType = CoinType.BITCOIN,
+    name = "Imported Bitcoin Wallet"
+)
+
+// Import wallet with private key (full control)
+val fullWallet = sdk.importWalletWithPrivateKey(
+    address = "0x742d35Cc6634C0532925a3b8D4C9db96C4b4Db45",
+    privateKey = "0x0123456789abcdef...",
+    coinType = CoinType.ETHEREUM,
+    name = "Imported Ethereum Wallet"
+)
+```
 
 ## Architecture
 
@@ -563,6 +729,10 @@ A complete example app is included in the `examples/` directory that demonstrate
 - `ProductionUsdPaymentExample.kt` - Production-ready payment processing
 - `MultiCryptoExample.kt` - Multi-cryptocurrency wallet management
 - `DeveloperFeeExample.kt` - Developer fee calculation and management
+- `UserWalletConfigExample.kt` - User wallet configuration and management
+- `CryptocurrencySelectionExample.kt` - Cryptocurrency selection and payment options
+- `WalletImportExample.kt` - Import existing wallets by address or private key
+- `RequiredWalletConfigExample.kt` - Required wallet configuration for all cryptocurrencies
 
 ## License
 
@@ -575,7 +745,3 @@ Contributions are welcome! Please create a Pull Request or open an Issue.
 ## Support
 
 For questions and support, please open an Issue in the GitHub repository.
-
----
-
-**Important Note**: This SDK is designed for educational purposes and development. In production environments, you should implement additional security measures and test transactions with real blockchain nodes.

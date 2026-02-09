@@ -95,4 +95,93 @@ object BitcoinCryptoUtils {
         
         return result.reverse().toString()
     }
+    
+    /**
+     * Convert private key string to KeyPair
+     */
+    fun privateKeyToKeyPair(privateKey: String): KeyPair {
+        try {
+            // Remove hex prefix if present
+            val cleanKey = if (privateKey.startsWith("0x")) {
+                privateKey.substring(2)
+            } else {
+                privateKey
+            }
+            
+            // Convert hex string to bytes
+            val keyBytes = cleanKey.chunked(2).map { it.toInt(16).toByte() }.toByteArray()
+            
+            // Create private key spec
+            val privateKeySpec = PKCS8EncodedKeySpec(keyBytes)
+            val keyFactory = KeyFactory.getInstance("EC")
+            val privKey = keyFactory.generatePrivate(privateKeySpec)
+            
+            // Generate corresponding public key
+            val keyGen = KeyPairGenerator.getInstance("EC")
+            keyGen.initialize(ECGenParameterSpec("secp256r1"))
+            val keyPair = keyGen.generateKeyPair()
+            
+            // Return new key pair with the imported private key
+            return KeyPair(keyPair.public, privKey)
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Invalid private key format: ${e.message}")
+        }
+    }
+    
+    /**
+     * Validate Bitcoin address format
+     */
+    fun validateAddress(address: String): Boolean {
+        if (address.length < 26 || address.length > 35) {
+            return false
+        }
+        
+        val base58Chars = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+        
+        // Check if all characters are valid Base58
+        if (!address.all { it in base58Chars }) {
+            return false
+        }
+        
+        try {
+            // Basic validation - try to decode
+            val decoded = base58Decode(address)
+            if (decoded.size < 25) {
+                return false
+            }
+            
+            // Check version byte (0x00 for mainnet)
+            val versionByte = decoded[0]
+            if (versionByte != 0x00.toByte()) {
+                return false
+            }
+            
+            // Verify checksum
+            val sha256 = MessageDigest.getInstance("SHA-256")
+            val checksum = decoded.copyOfRange(21, 25)
+            val calculatedChecksum = sha256.digest(sha256.digest(decoded.copyOfRange(0, 21))).copyOfRange(0, 4)
+            
+            return checksum.contentEquals(calculatedChecksum)
+        } catch (e: Exception) {
+            return false
+        }
+    }
+    
+    /**
+     * Simple Base58 decoding
+     */
+    private fun base58Decode(input: String): ByteArray {
+        val alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+        var num = BigInteger.ZERO
+        
+        for (char in input) {
+            val digit = alphabet.indexOf(char)
+            if (digit == -1) {
+                throw IllegalArgumentException("Invalid Base58 character: $char")
+            }
+            num = num.multiply(BigInteger.valueOf(58)).add(BigInteger.valueOf(digit.toLong()))
+        }
+        
+        return num.toByteArray()
+    }
 }

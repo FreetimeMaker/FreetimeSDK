@@ -592,4 +592,15 @@ class FreetimePaymentSDK {
             else -> throw UnsupportedOperationException("Unsupported coin type for private key import: $coinType")
         }
     }
+
+    fun createUsdPaymentGatewayWithWalletSupport(
+        merchantWalletAddress: String,
+        merchantCoinType: CoinType
+    ): UsdPaymentGateway {
+        return UsdPaymentGateway(
+            sdk = this,
+            merchantWalletAddress = merchantWalletAddress,
+            merchantCoinType = merchantCoinType
+        )
+    }
 }

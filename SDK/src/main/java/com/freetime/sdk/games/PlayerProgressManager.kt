@@ -103,8 +103,12 @@ class PlayerProgressManager {
     private fun isAchievementUnlocked(profile: PlayerProfile, achievement: Achievement, gameResult: GameResult): Boolean {
         return when (achievement.requirement.type) {
             RequirementType.TOTAL_GAMES_PLAYED -> profile.totalGamesPlayed >= achievement.requirement.target
-            RequirementType.TOTAL_WINS -> profile.totalWon.values.sum() > BigDecimal.ZERO && 
-                (profile.totalWon.values.sum() / profile.getTotalWagered() * BigDecimal("100")).toInt() >= achievement.requirement.target
+            RequirementType.TOTAL_WINS -> {
+                val totalWon = profile.totalWon.values.fold(BigDecimal.ZERO) { acc, amount -> acc + amount }
+                val totalWagered = profile.getTotalWagered()
+                totalWon > BigDecimal.ZERO && 
+                ((totalWon / totalWagered) * BigDecimal("100")).toInt() >= achievement.requirement.target
+            }
             RequirementType.WIN_STREAK -> profile.winStreak >= achievement.requirement.target
             RequirementType.WAGER_AMOUNT -> profile.getTotalWagered() >= BigDecimal(achievement.requirement.target)
             RequirementType.GAME_TYPE_PLAYS -> gameResult.gameType == achievement.requirement.gameType

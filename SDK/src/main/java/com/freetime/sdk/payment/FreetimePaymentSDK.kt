@@ -588,22 +588,10 @@ class FreetimePaymentSDK {
             CoinType.ETHEREUM -> EthereumCryptoUtils.privateKeyToKeyPair(privateKey)
             CoinType.LITECOIN -> LitecoinCryptoUtils.privateKeyToKeyPair(privateKey)
             CoinType.BITCOIN_CASH -> BitcoinCashCryptoUtils.privateKeyToKeyPair(privateKey)
-            CoinType.CARDANO -> CardanoCryptoUtils.privateKeyToKeyPair(privateKey)
             CoinType.DOGECOIN -> DogecoinCryptoUtils.privateKeyToKeyPair(privateKey)
             CoinType.SOLANA -> SolanaCryptoUtils.privateKeyToKeyPair(privateKey)
             else -> throw UnsupportedOperationException("Unsupported coin type for private key import: $coinType")
         }
-    }
-
-    fun createUsdPaymentGatewayWithWalletSupport(
-        merchantWalletAddress: String,
-        merchantCoinType: CoinType
-    ): UsdPaymentGateway {
-        return UsdPaymentGateway(
-            sdk = this,
-            merchantWalletAddress = merchantWalletAddress,
-            merchantCoinType = merchantCoinType
-        )
     }
     
     // ==================== DONATION METHODS ====================

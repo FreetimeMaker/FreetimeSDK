@@ -6,12 +6,13 @@
 ![Monthly download statistics](https://jitpack.io/v/FreetimeMaker/FreetimeSDK/month.svg)
 ![Total download statistics](https://jitpack.io/v/FreetimeMaker/FreetimeSDK/total.svg)
 
-A completely self-contained, open-source multi-cryptocurrency payment SDK for Android.
+A completely self-contained, open-source multi-cryptocurrency payment SDK for Android with integrated gaming functionality.
 
 ## Features
 
+### Payment Features
 - **Multi-Coin Support**: 9 cryptocurrencies including Bitcoin (BTC), Ethereum (ETH), Litecoin (LTC), Bitcoin Cash (BCH), Dogecoin (DOGE), Solana (SOL), Polygon (MATIC), Binance Coin (BNB), and Tron (TRX)
-- **User Wallet Configuration**: Users can configure their own wallet addresses in the app
+- **User Wallet Configuration**: Users can configure their own wallet addresses in app
 - **Cryptocurrency Selection**: Users can choose which cryptocurrencies to accept
 - **Flexible Payment Options**: Support for both SDK-generated and user-provided wallets
 - **Donation System**: Complete donation functionality with predefined amounts and custom options
@@ -19,6 +20,17 @@ A completely self-contained, open-source multi-cryptocurrency payment SDK for An
 - **Deep Link Support**: Automatic deep link generation for external wallet apps
 - **Developer Fee System**: Tiered fee structure (0.05% - 0.5%)
 - **USD Payment Gateway**: Automatic USD to cryptocurrency conversion with real-time rates
+
+### Gaming Features
+- **Game Integration**: Complete SDK for integrating cryptocurrency payments into games
+- **Player Progress Tracking**: Track player achievements, levels, and statistics
+- **Achievement System**: Built-in achievement system with XP and rewards
+- **Revenue Generation**: Built-in monetization with automatic fee collection
+- **Custom Game Support**: Easy integration framework for custom games
+- **Leaderboards**: Global and game-specific leaderboards
+- **Player Profiles**: Comprehensive player statistics and progress tracking
+
+### Technical Features
 - **Production-Ready**: Enhanced security, health monitoring, and statistics
 - **Fully Self-Contained**: No external dependencies or API calls required
 - **Local Cryptography**: All cryptographic operations performed locally
@@ -881,6 +893,139 @@ fun startPaymentMonitoring(paymentId: String) {
     }
 }
 ```
+
+## Games Integration
+
+The Freetime SDK includes a complete gaming module that allows developers to easily integrate cryptocurrency payments and player achievement tracking into their games.
+
+### Quick Start for Games
+
+```kotlin
+import com.freetime.sdk.payment.FreetimePaymentSDK
+import com.freetime.sdk.games.*
+
+// Initialize the payment SDK
+val paymentSDK = FreetimePaymentSDK()
+
+// Configure your wallet to receive payments
+paymentSDK.setUserWalletAddress(
+    coinType = CoinType.BITCOIN,
+    address = "your_bitcoin_address_here",
+    name = "Game Revenue Wallet"
+)
+
+// Get the games SDK
+val gamesSDK = paymentSDK.getGamesSDK()
+```
+
+### Creating a Custom Game
+
+```kotlin
+class MyCustomGame : GameInterface {
+    override val gameType = GameType.CUSTOM_GAME
+    override val minBetAmount = BigDecimal("0.001")
+    override val maxBetAmount = BigDecimal("1.0")
+    override val supportedCoins = listOf(CoinType.BITCOIN, CoinType.ETHEREUM)
+    override val rtpPercentage = BigDecimal("95.0")
+    
+    override suspend fun play(
+        amount: BigDecimal,
+        coinType: CoinType,
+        gameData: Map<String, Any>
+    ): GameResult {
+        // Your game logic here
+        val playerWon = /* your win condition */ true
+        val winAmount = if (playerWon) amount * BigDecimal("2") else BigDecimal.ZERO
+        
+        return GameResult(
+            gameId = "my_game_${UUID.randomUUID()}",
+            gameType = gameType,
+            playerWon = playerWon,
+            winAmount = winAmount,
+            coinType = coinType,
+            playAmount = amount,
+            timestamp = LocalDateTime.now(),
+            multiplier = if (playerWon) BigDecimal("2") else BigDecimal.ZERO
+        )
+    }
+    
+    override fun getGameRules(): GameRules {
+        return GameRules(
+            gameType = gameType,
+            description = "My custom game description",
+            minBetAmount = minBetAmount,
+            maxBetAmount = maxBetAmount,
+            supportedCoins = supportedCoins,
+            rtpPercentage = rtpPercentage,
+            maxWinMultiplier = BigDecimal("2"),
+            houseEdgePercentage = BigDecimal("5"),
+            volatilityLevel = VolatilityLevel.MEDIUM
+        )
+    }
+}
+```
+
+### Playing Games with Payments
+
+```kotlin
+// Register your game
+gamesSDK.registerGame("my_custom_game", MyCustomGame())
+
+// Play the game with real payments
+val result = gamesSDK.playGameWithPayment(
+    playerId = "player_123",
+    username = "PlayerName",
+    gameId = "my_custom_game",
+    amount = BigDecimal("0.01"),
+    coinType = CoinType.BITCOIN,
+    gameData = mapOf("difficulty" to "hard")
+)
+
+println("Game result: ${result.gameResult.getFormattedSummary()}")
+println("Player level: ${result.playerProfile.currentLevel}")
+println("New achievements: ${result.playerProgress.newAchievements}")
+```
+
+### Game Integration Framework
+
+The Freetime SDK provides a complete framework for developers to integrate cryptocurrency payments and player achievement tracking into their custom games.
+
+### Player Progress Tracking
+
+```kotlin
+// Get player profile
+val profile = gamesSDK.getPlayerProfile("player_123")
+
+// Get player statistics
+val stats = gamesSDK.getPlayerStatistics("player_123")
+println("Total games played: ${stats.totalGamesPlayed}")
+println("Win rate: ${stats.winRate}%")
+println("Current level: ${stats.level}")
+
+// Get player achievements
+val achievements = gamesSDK.getPlayerAchievements("player_123")
+achievements.forEach { achievement ->
+    println("Achievement: ${achievement.name} - ${achievement.description}")
+}
+
+// Get leaderboard
+val leaderboard = gamesSDK.getLeaderboard(10)
+leaderboard.forEachIndexed { index, player ->
+    println("${index + 1}. ${player.username} - Level ${player.level}")
+}
+```
+
+### Game Developer Revenue
+
+The SDK automatically handles developer fees with a tiered structure:
+
+| Transaction Amount | Developer Fee |
+|-------------------|---------------|
+| < $10 | 0.5% |
+| $10 - $100 | 0.3% |
+| $100 - $1,000 | 0.2% |
+| $1,000 - $10,000 | 0.1% |
+| > $10,000 | 0.05% |
 
 ## Architecture
 

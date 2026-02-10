@@ -9,6 +9,7 @@ import com.freetime.sdk.payment.providers.*
 import com.freetime.sdk.payment.crypto.*
 import com.freetime.sdk.payment.fee.FeeBreakdown
 import com.freetime.sdk.payment.fee.FeeManager
+import com.freetime.sdk.games.FreetimeGamesSDK
 import java.math.BigDecimal
 import java.security.KeyPair
 
@@ -720,5 +721,12 @@ class FreetimePaymentSDK {
      */
     fun getDonationAmountSelector(): DonationAmountSelector {
         return DonationAmountSelector()
+    }
+    
+    /**
+     * Get the games SDK for game functionality
+     */
+    fun getGamesSDK(): FreetimeGamesSDK {
+        return FreetimeGamesSDK(this)
     }
 }

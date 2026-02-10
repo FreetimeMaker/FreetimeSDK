@@ -14,6 +14,7 @@ A completely self-contained, open-source multi-cryptocurrency payment SDK for An
 - **User Wallet Configuration**: Users can configure their own wallet addresses in the app
 - **Cryptocurrency Selection**: Users can choose which cryptocurrencies to accept
 - **Flexible Payment Options**: Support for both SDK-generated and user-provided wallets
+- **Donation System**: Complete donation functionality with predefined amounts and custom options
 - **External Wallet Integration**: Integration with popular wallet apps (Trust Wallet, MetaMask, Coinbase, etc.)
 - **Deep Link Support**: Automatic deep link generation for external wallet apps
 - **Developer Fee System**: Tiered fee structure (0.05% - 0.5%)
@@ -195,6 +196,153 @@ val txHash = result.broadcast()
 println("Transaction sent: $txHash")
 ```
 
+## Donations
+
+The SDK includes a complete donation system that allows users to make cryptocurrency donations with predefined or custom amounts.
+
+### Basic Donation
+
+```kotlin
+// Create a simple donation with fees
+val donation = sdk.donate(
+    toAddress = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+    amount = BigDecimal("0.1"),
+    coinType = CoinType.BITCOIN,
+    donorName = "John Donor",
+    donationMessage = "Supporting your great work!"
+)
+
+println("Donation Amount: ${donation.donation.amount} BTC")
+println("Network Fee: ${donation.networkFee} BTC")
+println("Developer Fee: ${donation.developerFee} BTC")
+println("Total Cost: ${donation.totalAmount} BTC")
+
+// Broadcast the donation
+val txId = sdk.broadcastDonation(donation.donation)
+println("Donation sent: $txId")
+```
+
+### Donation without Fees
+
+```kotlin
+// Create a donation where the full amount goes to recipient
+val donation = sdk.donateWithoutFees(
+    toAddress = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+    amount = BigDecimal("0.1"),
+    coinType = CoinType.BITCOIN,
+    donorName = "Jane Donor"
+)
+
+val txId = sdk.broadcastDonation(donation)
+println("Full amount reaches recipient!")
+```
+
+### Donation Amount Options
+
+```kotlin
+// Get predefined donation amounts for a cryptocurrency
+val amountSelector = sdk.getDonationAmountSelector()
+val donationOptions = amountSelector.getDonationOptions(
+    toAddress = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+    coinType = CoinType.BITCOIN,
+    sdk = sdk
+)
+
+// Display donation options to user
+println("=== Donation Options ===")
+donationOptions.forEachIndexed { index, option ->
+    println("${index + 1}. ${option.label}")
+    println("   Fees: ${option.networkFee + option.developerFee} BTC")
+    println("   Total: ${option.totalCost} BTC")
+}
+
+// User selects an option
+val selectedOption = donationOptions[0]
+val donation = sdk.donate(
+    toAddress = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+    amount = selectedOption.amount,
+    coinType = CoinType.BITCOIN
+)
+```
+
+### Custom Donation Amounts
+
+```kotlin
+// User enters custom amount
+val customAmount = BigDecimal("0.05")
+
+// Validate the amount
+if (sdk.validateDonationAmount(customAmount, CoinType.BITCOIN)) {
+    val donation = sdk.donate(
+        toAddress = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+        amount = customAmount,
+        coinType = CoinType.BITCOIN,
+        donorName = "Custom Donor"
+    )
+    
+    println("Donation created: ${donation.donation.amount} BTC")
+} else {
+    println("Amount too small or invalid")
+}
+```
+
+### Donation Options with Custom Labels
+
+```kotlin
+// Define custom labels for predefined amounts
+val customLabels = mapOf(
+    BigDecimal("0.1") to "Small Donation",
+    BigDecimal("0.5") to "Medium Donation",
+    BigDecimal("1.0") to "Large Donation",
+    BigDecimal("5.0") to "Generous Support",
+    BigDecimal("10.0") to "VIP Supporter"
+)
+
+val options = amountSelector.getDonationOptionsWithLabels(
+    toAddress = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+    coinType = CoinType.ETHEREUM,
+    sdk = sdk,
+    labels = customLabels
+)
+```
+
+### Fee Estimation for Donations
+
+```kotlin
+// Get fee estimate before creating donation
+val feeEstimate = sdk.getDonationFeeEstimate(
+    toAddress = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+    amount = BigDecimal("0.1"),
+    coinType = CoinType.BITCOIN
+)
+
+println("Estimated fee: $feeEstimate BTC")
+
+// Get detailed fee breakdown
+val feeBreakdown = sdk.getDonationFeeBreakdown(
+    amount = BigDecimal("0.1"),
+    networkFee = feeEstimate,
+    coinType = CoinType.BITCOIN
+)
+
+println("Network Fee: ${feeBreakdown.networkFee} BTC")
+println("Developer Fee: ${feeBreakdown.developerFee} BTC")
+println("Recipient Receives: ${feeBreakdown.recipientAmount} BTC")
+```
+
+### Supported Donation Amounts
+
+The SDK provides predefined donation amounts optimized for each cryptocurrency:
+
+| Cryptocurrency | Predefined Amounts |
+|---|---|
+| Bitcoin (BTC) | 0.001, 0.005, 0.01, 0.05, 0.1 |
+| Ethereum (ETH) | 0.1, 0.5, 1, 5, 10 |
+| Litecoin (LTC) | 0.5, 1, 5, 10, 50 |
+| Bitcoin Cash (BCH) | 0.01, 0.05, 0.1, 0.5, 1 |
+| Dogecoin (DOGE) | 10, 50, 100, 500, 1000 |
+| Solana (SOL) | 0.1, 0.5, 1, 5, 10 |
+
 ## Developer Fees
 
 The SDK includes a tiered developer fee structure that automatically adjusts based on transaction amount:
@@ -276,6 +424,17 @@ The main class for interacting with the payment SDK.
 - `getExternalWalletManager(): ExternalWalletManager` - Gets external wallet manager for wallet app integration
 - `getAvailableWalletApps(coinType: CoinType): List<ExternalWalletApp>` - Gets available wallet apps for specific cryptocurrency
 - `generatePaymentDeepLink(walletApp: ExternalWalletApp, address: String, amount: BigDecimal, coinType: CoinType): String` - Generates deep link for external wallet
+
+#### Donation Methods
+
+- `suspend fun donate(toAddress: String, amount: BigDecimal, coinType: CoinType, donorName: String?, donationMessage: String?): DonationWithFees` - Creates a donation with fee calculation
+- `suspend fun donateWithoutFees(toAddress: String, amount: BigDecimal, coinType: CoinType, donorName: String?, donationMessage: String?): Donation` - Creates a donation without fees
+- `suspend fun broadcastDonation(donation: Donation): String` - Broadcasts a donation to the blockchain
+- `suspend fun getDonationFeeEstimate(toAddress: String, amount: BigDecimal, coinType: CoinType): BigDecimal` - Gets donation fee estimate
+- `fun getDonationFeeBreakdown(amount: BigDecimal, networkFee: BigDecimal, coinType: CoinType): FeeBreakdown` - Gets detailed fee breakdown for donation
+- `fun validateDonationAmount(amount: BigDecimal, coinType: CoinType): Boolean` - Validates if donation amount is valid for cryptocurrency
+- `fun getDonationProvider(): DonationInterface` - Gets the donation provider
+- `fun getDonationAmountSelector(): DonationAmountSelector` - Gets the donation amount selector for predefined amounts
 
 ### UsdPaymentGateway (Enhanced)
 
@@ -1010,6 +1169,7 @@ A complete example app is included in the `examples/` directory that demonstrate
 - `WalletImportExample.kt` - Import existing wallets by address or private key
 - `RequiredWalletConfigExample.kt` - Required wallet configuration for all cryptocurrencies
 - `ExternalWalletIntegrationExample.kt` - External wallet app integration and deep link generation
+- `DonationExample.kt` - Donation functionality with predefined amounts and custom options
 
 ## License
 

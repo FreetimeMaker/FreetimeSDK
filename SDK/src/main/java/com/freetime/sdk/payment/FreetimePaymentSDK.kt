@@ -22,6 +22,7 @@ class FreetimePaymentSDK {
     
     private val walletManager = WalletManager()
     private val paymentProviders = mutableMapOf<CoinType, PaymentInterface>()
+    private val donationProvider = DonationProvider()
     private val feeManager = FeeManager()
     private val userWalletConfigManager = UserWalletConfigManager()
     
@@ -602,5 +603,122 @@ class FreetimePaymentSDK {
             merchantWalletAddress = merchantWalletAddress,
             merchantCoinType = merchantCoinType
         )
+    }
+    
+    // ==================== DONATION METHODS ====================
+    
+    /**
+     * Send a cryptocurrency donation with automatic fee calculation
+     */
+    suspend fun donate(
+        toAddress: String,
+        amount: BigDecimal,
+        coinType: CoinType,
+        donorName: String? = null,
+        donationMessage: String? = null
+    ): DonationWithFees {
+        
+        // Validate donation amount
+        if (!donationProvider.validateDonationAmount(amount, coinType)) {
+            throw IllegalArgumentException("Invalid donation amount: $amount for ${coinType.coinName}")
+        }
+        
+        // Get network fee estimate for donation
+        val networkFee = donationProvider.getDonationFeeEstimate(toAddress, amount, coinType)
+        
+        // Calculate total fees including developer fee
+        val feeBreakdown = feeManager.calculateTotalFees(amount, networkFee, coinType)
+        
+        // Create donation with recipient amount (original amount minus fees)
+        val donation = donationProvider.createDonation(
+            toAddress = toAddress,
+            amount = feeBreakdown.recipientAmount,
+            coinType = coinType,
+            donorName = donorName,
+            donationMessage = donationMessage
+        )
+        
+        return DonationWithFees(
+            donation = donation,
+            feeBreakdown = feeBreakdown
+        )
+    }
+    
+    /**
+     * Send a donation without fees (full amount goes to recipient)
+     */
+    suspend fun donateWithoutFees(
+        toAddress: String,
+        amount: BigDecimal,
+        coinType: CoinType,
+        donorName: String? = null,
+        donationMessage: String? = null
+    ): Donation {
+        
+        // Validate donation amount
+        if (!donationProvider.validateDonationAmount(amount, coinType)) {
+            throw IllegalArgumentException("Invalid donation amount: $amount for ${coinType.coinName}")
+        }
+        
+        // Create donation without fees
+        val donation = donationProvider.createDonation(
+            toAddress = toAddress,
+            amount = amount,
+            coinType = coinType,
+            donorName = donorName,
+            donationMessage = donationMessage
+        )
+        
+        return donation
+    }
+    
+    /**
+     * Broadcast a signed donation to the blockchain
+     */
+    suspend fun broadcastDonation(donation: Donation): String {
+        return donationProvider.broadcastDonation(donation)
+    }
+    
+    /**
+     * Get donation fee estimate
+     */
+    suspend fun getDonationFeeEstimate(
+        toAddress: String,
+        amount: BigDecimal,
+        coinType: CoinType
+    ): BigDecimal {
+        return donationProvider.getDonationFeeEstimate(toAddress, amount, coinType)
+    }
+    
+    /**
+     * Get donation fee breakdown (network fee + developer fee)
+     */
+    fun getDonationFeeBreakdown(
+        amount: BigDecimal,
+        networkFee: BigDecimal,
+        coinType: CoinType
+    ): FeeBreakdown {
+        return feeManager.calculateTotalFees(amount, networkFee, coinType)
+    }
+    
+    /**
+     * Validate donation amount
+     */
+    fun validateDonationAmount(amount: BigDecimal, coinType: CoinType): Boolean {
+        return donationProvider.validateDonationAmount(amount, coinType)
+    }
+    
+    /**
+     * Get donation provider
+     */
+    fun getDonationProvider(): DonationInterface {
+        return donationProvider
+    }
+    
+    /**
+     * Get donation amount selector for showing donation options
+     */
+    fun getDonationAmountSelector(): DonationAmountSelector {
+        return DonationAmountSelector()
     }
 }

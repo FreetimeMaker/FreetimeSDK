@@ -25,18 +25,18 @@ class PaymentGateway(
         amount: BigDecimal,
         customerReference: String? = null,
         description: String? = null,
-        /** Optional: Externes Wallet, das der App-Besitzer bereitstellt. Wenn null, wird ein temporäres Wallet generiert. */
-        providedWallet: Wallet? = null,
+        /** Optional: Externe Wallet-Adresse, die der App-Besitzer bereitstellt. Wenn null, wird eine temporäre Adresse generiert. */
+        providedWallet: String? = null,
         /** Optionale externe Adresse, an die empfangene Gelder weitergeleitet werden sollen */
         forwardToAddress: String? = null
     ): PaymentRequest {
         
-        // Verwende das bereitgestellte Wallet oder erstelle ein temporäres Wallet
-        val tempWallet = providedWallet ?: sdk.createWallet(merchantCoinType, "Payment-$customerReference")
+        // Verwende die bereitgestellte Adresse oder erstelle eine temporäre Adresse
+        val tempAddress = providedWallet ?: generateTemporaryAddress()
         
         val paymentRequest = PaymentRequest(
             id = generatePaymentId(),
-            customerAddress = tempWallet.address,
+            customerAddress = tempAddress,
             merchantAddress = merchantWalletAddress,
             amount = amount,
             coinType = merchantCoinType,
@@ -50,7 +50,7 @@ class PaymentGateway(
         
         pendingPayments[paymentRequest.id] = PendingPayment(
             paymentRequest = paymentRequest,
-            tempWallet = tempWallet
+            tempAddress = tempAddress
         )
         
         return paymentRequest
@@ -72,14 +72,14 @@ class PaymentGateway(
         }
         
         // Prüfe das Guthaben auf der temporären Adresse
-        val currentBalance = sdk.getBalance(pendingPayment.tempWallet.address)
+        val currentBalance = getBalanceForAddress(pendingPayment.tempAddress, merchantCoinType)
         
         if (currentBalance >= paymentRequest.amount) {
             // Zahlung erhalten - leite an Händler weiter
             try {
                 val destination = paymentRequest.forwardToAddress ?: merchantWalletAddress
                 val txHash = sdk.send(
-                    fromAddress = pendingPayment.tempWallet.address,
+                    fromAddress = pendingPayment.tempAddress,
                     toAddress = destination,
                     amount = paymentRequest.amount,
                     coinType = merchantCoinType
@@ -116,7 +116,7 @@ class PaymentGateway(
         if (pending != null) {
             val currentBalance = try {
                 // Synchroner Aufruf für Balance-Check
-                runBlocking { sdk.getBalance(pending.tempWallet.address) }
+                runBlocking { getBalanceForAddress(pending.tempAddress, merchantCoinType) }
             } catch (e: Exception) {
                 BigDecimal.ZERO
             }
@@ -171,6 +171,22 @@ class PaymentGateway(
         return "pay_${System.currentTimeMillis()}_${(1000..9999).random()}"
     }
     
+    /**
+     * Generiert eine temporäre Adresse für Zahlungen
+     */
+    private fun generateTemporaryAddress(): String {
+        return "temp_${System.currentTimeMillis()}_${(1000..9999).random()}"
+    }
+    
+    /**
+     * Ruft das Guthaben für eine Adresse ab (simuliert)
+     */
+    private suspend fun getBalanceForAddress(address: String, coinType: CoinType): BigDecimal {
+        // Hier würde normalerweise eine echte Blockchain-Abfrage stattfinden
+        // Für jetzt geben wir 0 zurück, da wir keine Wallets mehr erstellen
+        return BigDecimal.ZERO
+    }
+    
     companion object {
         private const val PAYMENT_TIMEOUT = 30 * 60 * 1000L // 30 Minuten in Millisekunden
     }
@@ -199,7 +215,7 @@ data class PaymentRequest(
  */
 private data class PendingPayment(
     val paymentRequest: PaymentRequest,
-    val tempWallet: Wallet
+    val tempAddress: String
 )
 
 /**

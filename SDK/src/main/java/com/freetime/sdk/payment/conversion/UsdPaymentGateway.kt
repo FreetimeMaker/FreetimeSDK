@@ -28,7 +28,7 @@ class UsdPaymentGateway(
         customerReference: String? = null,
         description: String? = null,
         /** Optional: Externes Wallet, das der App-Besitzer bereitstellt. */
-        providedWallet: com.freetime.sdk.payment.Wallet? = null,
+        providedWallet: String? = null,
         /** Optionale externe Adresse, an die empfangene Gelder weitergeleitet werden sollen */
         forwardToAddress: String? = null
     ): UsdPaymentRequest {
@@ -195,7 +195,7 @@ class UsdPaymentGateway(
         usdAmount: BigDecimal,
         customerReference: String? = null,
         description: String? = null,
-        providedWallet: com.freetime.sdk.payment.Wallet? = null,
+        providedWallet: String? = null,
         forwardToAddress: String? = null
     ): UsdPaymentRequestWithWalletSelection {
         

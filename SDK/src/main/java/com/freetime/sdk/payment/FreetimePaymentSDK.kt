@@ -21,7 +21,6 @@ import java.security.KeyPair
  */
 class FreetimePaymentSDK {
     
-    private val walletManager = WalletManager()
     private val paymentProviders = mutableMapOf<CoinType, PaymentInterface>()
     private val donationProvider = DonationProvider()
     private val feeManager = FeeManager()
@@ -45,39 +44,7 @@ class FreetimePaymentSDK {
         paymentProviders[CoinType.SOLANA] = SolanaPaymentProvider()
     }
     
-    /**
-     * Create a new wallet for the specified cryptocurrency
-     */
-    suspend fun createWallet(coinType: CoinType, name: String? = null): Wallet {
-        val provider = paymentProviders[coinType] 
-            ?: throw UnsupportedOperationException("Unsupported coin type: $coinType")
-        
-        val address = provider.generateAddress(coinType)
-        val keyPair = generateKeyPair(coinType)
-        
-        val wallet = Wallet(
-            address = address,
-            coinType = coinType,
-            keyPair = keyPair,
-            name = name ?: "${coinType.coinName} Wallet"
-        )
-        
-        walletManager.addWallet(wallet)
-        return wallet
-    }
     
-    /**
-     * Get balance of a wallet address
-     */
-    suspend fun getBalance(address: String): BigDecimal {
-        val wallet = walletManager.getWallet(address) 
-            ?: throw IllegalArgumentException("Wallet not found: $address")
-        
-        val provider = paymentProviders[wallet.coinType]
-            ?: throw UnsupportedOperationException("No provider for ${wallet.coinType}")
-        
-        return provider.getBalance(address, wallet.coinType)
-    }
     
     /**
      * Send cryptocurrency with automatic fee calculation
@@ -143,19 +110,6 @@ class FreetimePaymentSDK {
         return provider.getFeeEstimate(fromAddress, toAddress, amount, coinType)
     }
     
-    /**
-     * Get all wallets
-     */
-    fun getAllWallets(): List<Wallet> {
-        return walletManager.getAllWallets()
-    }
-    
-    /**
-     * Get wallets by coin type
-     */
-    fun getWalletsByCoinType(coinType: CoinType): List<Wallet> {
-        return walletManager.getWalletsByCoinType(coinType)
-    }
     
     /**
      * Validate address format
@@ -167,21 +121,6 @@ class FreetimePaymentSDK {
         return provider.validateAddress(address, coinType)
     }
     
-    /**
-     * Generate key pair for the specified cryptocurrency
-     */
-    private fun generateKeyPair(coinType: CoinType): java.security.KeyPair {
-        return when (coinType) {
-            CoinType.BITCOIN -> BitcoinCryptoUtils.generateKeyPair()
-            CoinType.ETHEREUM -> EthereumCryptoUtils.generateKeyPair()
-            CoinType.LITECOIN -> LitecoinCryptoUtils.generateKeyPair()
-            CoinType.BITCOIN_CASH -> BitcoinCashCryptoUtils.generateKeyPair()
-            CoinType.CARDANO -> CardanoCryptoUtils.generateKeyPair()
-            CoinType.DOGECOIN -> DogecoinCryptoUtils.generateKeyPair()
-            CoinType.SOLANA -> SolanaCryptoUtils.generateKeyPair()
-            else -> throw UnsupportedOperationException("Unsupported coin type: $coinType")
-        }
-    }
     
     /**
      * Create USD Payment Gateway with automatic crypto conversion
@@ -509,90 +448,8 @@ class FreetimePaymentSDK {
         return true
     }
     
-    /**
-     * Import an existing wallet by address
-     * This allows users to use their existing wallet addresses in the app
-     */
-    suspend fun importWalletByAddress(
-        address: String,
-        coinType: CoinType,
-        name: String? = null
-    ): Wallet {
-        // Validate address format
-        if (!validateAddress(address, coinType)) {
-            throw IllegalArgumentException("Invalid address format for $coinType: $address")
-        }
-        
-        // Check if wallet already exists
-        val existingWallet = walletManager.getWallet(address)
-        if (existingWallet != null) {
-            return existingWallet
-        }
-        
-        // For imported wallets, we create a watch-only wallet without private keys
-        // Users can only receive funds and check balance with imported addresses
-        val keyPair = generateKeyPair(coinType) // Generate placeholder key pair
-        
-        val wallet = Wallet(
-            address = address,
-            coinType = coinType,
-            keyPair = keyPair,
-            name = name ?: "Imported ${coinType.coinName} Wallet"
-        )
-        
-        walletManager.addWallet(wallet)
-        return wallet
-    }
     
-    /**
-     * Import wallet with private key for full control
-     * This allows users to import both address and private key for complete wallet functionality
-     */
-    suspend fun importWalletWithPrivateKey(
-        address: String,
-        privateKey: String,
-        coinType: CoinType,
-        name: String? = null
-    ): Wallet {
-        // Validate address format
-        if (!validateAddress(address, coinType)) {
-            throw IllegalArgumentException("Invalid address format for $coinType: $address")
-        }
-        
-        // Check if wallet already exists
-        val existingWallet = walletManager.getWallet(address)
-        if (existingWallet != null) {
-            return existingWallet
-        }
-        
-        // Convert private key string to KeyPair
-        val keyPair = convertPrivateKeyToKeyPair(privateKey, coinType)
-        
-        val wallet = Wallet(
-            address = address,
-            coinType = coinType,
-            keyPair = keyPair,
-            name = name ?: "Imported ${coinType.coinName} Wallet"
-        )
-        
-        walletManager.addWallet(wallet)
-        return wallet
-    }
     
-    /**
-     * Convert private key string to KeyPair for specific cryptocurrency
-     */
-    private fun convertPrivateKeyToKeyPair(privateKey: String, coinType: CoinType): java.security.KeyPair {
-        return when (coinType) {
-            CoinType.BITCOIN -> BitcoinCryptoUtils.privateKeyToKeyPair(privateKey)
-            CoinType.ETHEREUM -> EthereumCryptoUtils.privateKeyToKeyPair(privateKey)
-            CoinType.LITECOIN -> LitecoinCryptoUtils.privateKeyToKeyPair(privateKey)
-            CoinType.BITCOIN_CASH -> BitcoinCashCryptoUtils.privateKeyToKeyPair(privateKey)
-            CoinType.DOGECOIN -> DogecoinCryptoUtils.privateKeyToKeyPair(privateKey)
-            CoinType.SOLANA -> SolanaCryptoUtils.privateKeyToKeyPair(privateKey)
-            else -> throw UnsupportedOperationException("Unsupported coin type for private key import: $coinType")
-        }
-    }
     
     // ==================== DONATION METHODS ====================
     

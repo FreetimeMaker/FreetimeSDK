@@ -33,7 +33,7 @@ class ProductionUsdPaymentGateway(
         description: String? = null,
         metadata: Map<String, String> = emptyMap(),
         /** Optional: Externes Wallet, das der App-Besitzer bereitstellt. */
-        providedWallet: com.freetime.sdk.payment.Wallet? = null,
+        providedWallet: String? = null,
         /** Optionale externe Adresse, an die empfangene Gelder weitergeleitet werden sollen */
         forwardToAddress: String? = null
     ): UsdPaymentRequest {

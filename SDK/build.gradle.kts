@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "com.freetime"
-version = "1.0.6"
+version = "1.0.7"
 
 android {
     namespace = "com.freetime.sdk"

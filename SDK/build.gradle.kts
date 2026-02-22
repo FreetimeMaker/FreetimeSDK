@@ -1,6 +1,5 @@
 plugins {
     id("com.android.library")
-    id("maven-publish")
 }
 
 group = "com.freetime"
@@ -8,7 +7,7 @@ version = "1.0.9"
 
 android {
     namespace = "com.freetime.sdk"
-    compileSdk = 34
+    compileSdk = 33
 
     defaultConfig {
         minSdk = 26
@@ -27,8 +26,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     // JitPack braucht das für Source-Jars

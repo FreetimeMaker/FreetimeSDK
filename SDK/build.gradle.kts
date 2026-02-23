@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.freetime"
-version = "1.1.0"
+version = "1.1.1"
 
 android {
     namespace = "com.freetime.sdk"
@@ -39,7 +39,7 @@ android {
                 
                 groupId = "com.github.FreetimeMaker"
                 artifactId = "FreetimeSDK"
-                version = "1.1.0"
+                version = "1.1.1"
             }
         }
     }

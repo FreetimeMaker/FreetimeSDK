@@ -33,8 +33,14 @@ android {
 
     // JitPack braucht das für Source-Jars
     publishing {
-        singleVariant("release") {
-            withSourcesJar()
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"])
+                
+                groupId = "com.github.FreetimeMaker"
+                artifactId = "FreetimeSDK"
+                version = "1.1.0"
+            }
         }
     }
 }

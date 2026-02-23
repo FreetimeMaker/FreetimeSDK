@@ -1,9 +1,10 @@
 plugins {
     id("com.android.library")
+    id("maven-publish")
 }
 
 group = "com.freetime"
-version = "1.0.9"
+version = "1.1.0"
 
 android {
     namespace = "com.freetime.sdk"

@@ -8,7 +8,6 @@ import java.nio.charset.StandardCharsets
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -23,8 +22,7 @@ class ConversionTracker(
     
     private val conversionHistory = ConcurrentHashMap<String, ConversionRecord>()
     private val mutex = Mutex()
-    private val clock = Clock.System
-    
+
     /**
      * Track a USD to cryptocurrency conversion and generate a shareable URL
      */
@@ -209,7 +207,7 @@ class ConversionTracker(
      * Generate unique conversion ID
      */
     private fun generateConversionId(): String {
-        val timestamp = clock.now().epochSeconds
+        val timestamp = System.currentTimeMillis() / 1000
         val random = (1000..9999).random()
         return "conv_${timestamp}_${random}"
     }
@@ -253,7 +251,8 @@ class ConversionTracker(
             buildString {
                 appendLine("ID,Timestamp,USD Amount,Crypto Amount,Coin Type,Exchange Rate,Description,Customer Reference")
                 conversions.forEach { record ->
-                    val timestamp = clock.now().toLocalDateTime(TimeZone.currentSystemDefault())
+                    val instant = kotlinx.datetime.Instant.fromEpochMilliseconds(record.timestamp)
+                    val timestamp = instant.toLocalDateTime(TimeZone.currentSystemDefault())
                         .toString().replace("T", " ")
                     appendLine("${record.id},${timestamp},${record.usdAmount},${record.cryptoAmount},${record.coinType.symbol},${record.exchangeRate},${record.description ?: ""},${record.customerReference ?: ""}")
                 }

@@ -8,7 +8,7 @@ version = "1.1.1"
 
 android {
     namespace = "com.freetime.sdk"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 26
@@ -30,12 +30,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+}
 
-    // JitPack braucht das für Source-Jars
+// JitPack braucht das für Source-Jars
+afterEvaluate {
     publishing {
         publications {
             create<MavenPublication>("release") {
-                from(components["release"])
+                from(components.findByName("release"))
                 
                 groupId = "com.github.FreetimeMaker"
                 artifactId = "FreetimeSDK"
@@ -50,6 +52,9 @@ dependencies {
     
     // Coroutines for async operations
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+    
+    // DateTime support
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
     
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")

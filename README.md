@@ -71,7 +71,7 @@ allprojects {
 
 ```gradle
 dependencies {
-    implementation 'com.github.FreetimeMaker:FreetimeSDK:v1.0.2'
+    implementation 'com.github.FreetimeMaker:FreetimeSDK:<newest version>'
 }
 ```
 

@@ -19,24 +19,24 @@ class PaymentGateway(
     private val confirmedPayments = ConcurrentHashMap<String, ConfirmedPayment>()
     
     /**
-     * Erstellt eine temporäre Zahlungsadresse für einen Kunden
+     * Erstellt eine direkte Zahlungsanfrage vom Benutzer an den Händler
      */
     suspend fun createPaymentAddress(
         amount: BigDecimal,
         customerReference: String? = null,
         description: String? = null,
-        /** Optional: Externe Wallet-Adresse, die der App-Besitzer bereitstellt. Wenn null, wird eine temporäre Adresse generiert. */
+        /** Benutzer-Wallet-Adresse von der die Zahlung gesendet wird */
         providedWallet: String? = null,
         /** Optionale externe Adresse, an die empfangene Gelder weitergeleitet werden sollen */
         forwardToAddress: String? = null
     ): PaymentRequest {
         
-        // Verwende die bereitgestellte Adresse oder erstelle eine temporäre Adresse
-        val tempAddress = providedWallet ?: generateTemporaryAddress()
+        // Verwende die bereitgestellte Benutzer-Wallet-Adresse oder erstelle eine temporäre Adresse
+        val userWalletAddress = providedWallet ?: generateTemporaryAddress()
         
         val paymentRequest = PaymentRequest(
             id = generatePaymentId(),
-            customerAddress = tempAddress,
+            customerAddress = userWalletAddress,
             merchantAddress = merchantWalletAddress,
             amount = amount,
             coinType = merchantCoinType,
@@ -50,10 +50,38 @@ class PaymentGateway(
         
         pendingPayments[paymentRequest.id] = PendingPayment(
             paymentRequest = paymentRequest,
-            tempAddress = tempAddress
+            tempAddress = userWalletAddress
         )
         
         return paymentRequest
+    }
+    
+    /**
+     * Führt die direkte Zahlung vom Benutzer an den Händler durch
+     */
+    suspend fun executeDirectPayment(
+        userWalletAddress: String,
+        amount: BigDecimal,
+        customerReference: String? = null,
+        description: String? = null,
+        forwardToAddress: String? = null
+    ): TransactionWithFees {
+        
+        // Validiere die Benutzer-Wallet-Adresse
+        if (!sdk.validateAddress(userWalletAddress, merchantCoinType)) {
+            throw IllegalArgumentException("Ungültige Benutzer-Wallet-Adresse: $userWalletAddress")
+        }
+        
+        // Bestimme das Ziel der Zahlung
+        val destination = forwardToAddress ?: merchantWalletAddress
+        
+        // Führe die direkte Zahlung durch
+        return sdk.send(
+            fromAddress = userWalletAddress,
+            toAddress = destination,
+            amount = amount,
+            coinType = merchantCoinType
+        )
     }
     
     /**
@@ -75,9 +103,19 @@ class PaymentGateway(
         val currentBalance = getBalanceForAddress(pendingPayment.tempAddress, merchantCoinType)
         
         if (currentBalance >= paymentRequest.amount) {
-            // Zahlung erhalten - leite an Händler weiter
+            // Zahlung erhalten - leite an Zieladresse weiter
             try {
-                val destination = paymentRequest.forwardToAddress ?: merchantWalletAddress
+                // Wenn eine providedWallet Adresse angegeben wurde, sende direkt dorthin
+                // Ansonsten an die forwardToAddress oder Händler-Adresse
+                val destination = when {
+                    paymentRequest.forwardToAddress != null -> paymentRequest.forwardToAddress
+                    pendingPayment.tempAddress != paymentRequest.customerAddress -> {
+                        // Wenn providedWallet verwendet wurde, ist dies die Zieladresse
+                        pendingPayment.tempAddress
+                    }
+                    else -> merchantWalletAddress
+                }
+                
                 val txHash = sdk.send(
                     fromAddress = pendingPayment.tempAddress,
                     toAddress = destination,

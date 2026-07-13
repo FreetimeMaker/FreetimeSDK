@@ -1,37 +1,25 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# Freetime SDK ProGuard Rules
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Keep public API classes
+-keep class com.freetime.sdk.FreetimePay { *; }
+-keep class com.freetime.sdk.DeveloperConfig { *; }
+-keep class com.freetime.sdk.PaymentRequest { *; }
+-keep class com.freetime.sdk.PaymentResult { *; }
+-keep interface com.freetime.sdk.PaymentProvider { *; }
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Keep all providers
+-keep class com.freetime.sdk.providers.** { *; }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
-
-# Keep payment SDK classes
--keep class com.freetime.sdk.payment.** { *; }
--keep class com.freetime.sdk.payment.crypto.** { *; }
--keep class com.freetime.sdk.payment.providers.** { *; }
--keep class com.freetime.sdk.payment.gateway.** { *; }
-
-# Keep enum classes
--keepclassmembers enum * {
-    public static **[] values();
-    public static ** valueOf(java.lang.String);
+# Keep Activity and its resources
+-keep class com.freetime.sdk.PaymentSelectionActivity { *; }
+-keepclassmembers class com.freetime.sdk.R$* {
+    public static <fields>;
 }
 
-# Keep cryptographic operations
--keep class java.security.** { *; }
--keep class javax.crypto.** { *; }
+# Keep Coroutines and other dependencies
+-keep class kotlinx.coroutines.** { *; }
+-keep class kotlinx.datetime.** { *; }
+
+# General Android support
+-keep class androidx.browser.customtabs.** { *; }
+-keep class androidx.appcompat.** { *; }

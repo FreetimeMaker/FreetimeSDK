@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.freetime"
-version = "1.1.6"
+version = "1.2.0"
 
 android {
     namespace = "com.freetime.sdk"
@@ -32,16 +32,14 @@ android {
     }
 }
 
-// JitPack braucht das für Source-Jars
 afterEvaluate {
     publishing {
         publications {
             create<MavenPublication>("release") {
                 from(components.findByName("release"))
-                
                 groupId = "com.github.FreetimeMaker"
                 artifactId = "FreetimeSDK"
-                version = "1.1.6"
+                version = "1.2.0"
             }
         }
     }
@@ -49,11 +47,12 @@ afterEvaluate {
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.7.1")
+    implementation("androidx.browser:browser:1.8.0")
+
+    // F-Droid friendly: No proprietary binary blobs.
+    // We use Web-based flows (Custom Tabs) for fiat payments.
     
-    // Coroutines for async operations
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
-    
-    // DateTime support
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.8.0-0.6.x-compat")
     
     testImplementation("junit:junit:4.13.2")

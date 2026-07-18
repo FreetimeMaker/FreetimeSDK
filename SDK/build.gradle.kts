@@ -4,11 +4,11 @@ plugins {
 }
 
 group = "com.freetime"
-version = "1.2.0"
+version = "1.3.0"
 
 android {
     namespace = "com.freetime.sdk"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 26
@@ -39,7 +39,7 @@ afterEvaluate {
                 from(components.findByName("release"))
                 groupId = "com.github.FreetimeMaker"
                 artifactId = "FreetimeSDK"
-                version = "1.2.0"
+                version = "1.3.0"
             }
         }
     }
@@ -47,7 +47,7 @@ afterEvaluate {
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.7.1")
-    implementation("androidx.browser:browser:1.8.0")
+    implementation("androidx.browser:browser:1.10.0")
 
     // F-Droid friendly: No proprietary binary blobs.
     // We use Web-based flows (Custom Tabs) for fiat payments.

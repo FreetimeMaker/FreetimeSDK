@@ -7,23 +7,23 @@ This SDK enables the integration of real payment providers into Android applicat
 - **F-Droid Friendly**: No proprietary SDKs. Uses Web Flows and native Intents.
 - **Serverless**: Designed to work without any backend infrastructure.
 - **Real Providers**: Supports RevenueCat (Web Billing) and a wide range of Cryptocurrencies.
-- **Crypto-Ready**: Native support for BTC, ETH, Base, XMR, LTC, and SOL via Wallet Intents.
+- **Crypto-Ready**: Native support for 30+ major cryptocurrencies and Layer 2s (BTC, ETH, SOL, OP, ARB, BASE, etc.).
+- **Modern Infrastructure**: Built with Kotlin 2.4 and target SDK 37.
 
 ## Supported Providers
 
 1.  **RevenueCat (Web Billing)**: Secure fiat payments and subscriptions.
-2.  **Bitcoin (BTC)**: Standard BIP21 payments.
-3.  **Ethereum (ETH)**: ERC-681 payments on Ethereum Mainnet.
-4.  **Base Pay (L2)**: Low-fee crypto payments on the Base network.
-5.  **Monero (XMR)**: Privacy-focused direct P2P payments.
-6.  **Litecoin (LTC)**: Fast and low-fee payments.
-7.  **Solana (SOL)**: High-speed crypto payments.
+2.  **Cryptocurrencies**: Comprehensive support for 32 major assets and networks:
+    - **Legacy/Major**: BTC, ETH, DOGE, LTC, BCH, TRX, XLM, DASH, ZEC, XMR, XRP.
+    - **High Performance L1s**: SOL, ADA, DOT, ALGO, ATOM, NEAR, EGLD, HBAR, APT, SUI, VET, XTZ.
+    - **Layer 2s & EVMs**: OP, ARB, BASE, CELO, AVAX, MATIC, FTM.
+    - **Exchange/Native**: BNB, XNO.
 
 ## Installation
 
 ```kotlin
 dependencies {
-    implementation(project(":SDK"))
+    implementation("com.freetime:sdk:1.3.0")
 }
 ```
 
@@ -36,17 +36,28 @@ val sdk = FreetimePay(config)
 ```
 
 ### 2. Register Providers
-```kotlin
-// RevenueCat via Web Billing
-sdk.registerProvider(RevenueCatWebProvider("https://checkout.revenuecat.com/your_link"))
 
-// Crypto Providers
+#### Batch Registration for Crypto
+The easiest way to register all supported cryptocurrencies is using a map of your addresses:
+
+```kotlin
+val addresses = mapOf(
+    "BTC" to "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+    "ETH" to "0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe",
+    "SOL" to "7p2...",
+    "XMR" to "44AFFq...",
+    // ... add any other addresses for the tokens you wish to support
+)
+
+sdk.registerDefaultCryptoProviders(addresses)
+```
+
+#### Manual Registration
+You can still register providers individually if needed:
+
+```kotlin
+sdk.registerProvider(RevenueCatWebProvider("https://checkout.revenuecat.com/your_link"))
 sdk.registerProvider(BitcoinProvider("BTC_ADDRESS"))
-sdk.registerProvider(EthereumProvider("ETH_ADDRESS"))
-sdk.registerProvider(BaseDirectProvider("BASE_ADDRESS"))
-sdk.registerProvider(MoneroProvider("XMR_ADDRESS"))
-sdk.registerProvider(LitecoinProvider("LTC_ADDRESS"))
-sdk.registerProvider(SolanaProvider("SOL_ADDRESS"))
 ```
 
 ### 3. Start Payment
@@ -61,6 +72,7 @@ sdk.showPaymentSheet(this, request) { result ->
     when (result) {
         is PaymentResult.Success -> println("Success! Transaction ID: ${result.transactionId}")
         is PaymentResult.Error -> println("Error: ${result.message}")
+        is PaymentResult.Cancelled -> println("User cancelled")
     }
 }
 ```

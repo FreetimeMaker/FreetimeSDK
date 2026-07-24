@@ -7,7 +7,7 @@ import android.util.Log
  * The main entry point for the Freetime SDK.
  */
 class FreetimePay(
-    private val config: DeveloperConfig
+    val config: DeveloperConfig
 ) {
     private val providers = mutableListOf<PaymentProvider>()
 

@@ -49,6 +49,9 @@ class PaymentSelectionActivity : AppCompatActivity() {
 
         findViewById<TextView>(R.id.tvAmount).text = "Total: ${request.amount} ${request.currency}"
 
+        val promotionView = findViewById<PromotionView>(R.id.promotionView)
+        promotionView.loadPromotion(sdk.config)
+
         val container = findViewById<LinearLayout>(R.id.providerContainer)
         sdk.getAvailableProviders().forEach { provider ->
             val button = Button(this).apply {

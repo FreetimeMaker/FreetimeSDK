@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "promotions": [
+    {
+      "id": "geoweather_promo",
+      "title": "GeoWeather",
+      "description": "Look at the Weather from every City.",
+      "iconUrl": "https://raw.githubusercontent.com/FreetimeMaker/GeoWeather/master/app/src/main/res/mipmap-xxxhdpi/icon.png",
+      "targetUrl": "https://github.com/FreetimeMaker/GeoWeather"
+    },
+    {
+      "id": "freetimesdk_info",
+      "title": "FreetimeSDK",
+      "description": "Integrate Crypto-Payments in your F-Droid App – without Tracking!",
+      "iconUrl": "https://raw.githubusercontent.com/FreetimeMaker/FreetimeSDK/master/media/sdk_logo.png",
+      "targetUrl": "https://github.com/FreetimeMaker/FreetimeSDK"
+    },
+    {
+      "id": "supersmp_companion_promo",
+      "title": "SuperSMP Companion",
+      "description": "You're playing the SuperSMP Minecraft Server or planning to then get the App now!",
+      "iconUrl": "https://raw.githubusercontent.com/FreetimeMaker/SuperSMP-Companion-App/master/app/src/main/res/mipmap-xxxhdpi/icon.png",
+      "targetUrl": "https://github.com/FreetimeMaker/SuperSMP-Companion-App"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-# Freetime Multi-Provider Payment SDK (F-Droid Friendly)
+# <img src="media/sdk_logo.png" width="48" height="48" valign="middle"> Freetime Multi-Provider Payment SDK (F-Droid Friendly)
 
 This SDK enables the integration of real payment providers into Android applications without relying on proprietary binary blobs. It is fully open-source, serverless, and ideal for F-Droid.
 
@@ -6,9 +6,35 @@ This SDK enables the integration of real payment providers into Android applicat
 
 - **F-Droid Friendly**: No proprietary SDKs. Uses Web Flows and native Intents.
 - **Serverless**: Designed to work without any backend infrastructure.
+- **Promotion System**: Display "Featured Projects" anywhere in your app. Privacy-friendly and fully configurable.
 - **Real Providers**: Supports RevenueCat (Web Billing) and a wide range of Cryptocurrencies.
 - **Crypto-Ready**: Native support for 30+ major cryptocurrencies and Layer 2s (BTC, ETH, SOL, OP, ARB, BASE, etc.).
 - **Modern Infrastructure**: Built with Kotlin 2.4 and target SDK 37.
+
+## Promotion System
+
+The SDK includes a flexible promotion system to monetize your app ethically.
+
+### 1. Default Placement
+By default, a promotion is shown at the bottom of the payment selection sheet.
+
+### 2. Manual Placement
+Use the `PromotionView` component to show featured projects anywhere in your app:
+
+```xml
+<com.freetime.sdk.PromotionView
+    android:id="@+id/promotion"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+```
+
+```kotlin
+val promoView = findViewById<PromotionView>(R.id.promotion)
+promoView.loadPromotion(sdk.config)
+```
+
+### 3. Custom Content
+Developers can provide their own JSON list of promotions via `DeveloperConfig(customPromotionUrl = "...")` or opt-out entirely for free.
 
 ## Supported Providers
 

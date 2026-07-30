@@ -23,40 +23,48 @@ object PromotionManager {
         val urlToFetch = config.customPromotionUrl ?: DEFAULT_PROMO_URL
 
         executor.execute {
+            var connection: HttpURLConnection? = null
             try {
                 val url = URL(urlToFetch)
-                val connection = url.openConnection() as HttpURLConnection
+                connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"
                 connection.connectTimeout = 5000
                 connection.readTimeout = 5000
 
-                val reader = BufferedReader(InputStreamReader(connection.inputStream))
-                val response = StringBuilder()
-                var line: String?
-                while (reader.readLine().also { line = it } != null) {
-                    response.append(line)
-                }
-                reader.close()
+                val responseCode = connection.responseCode
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    val reader = BufferedReader(InputStreamReader(connection.inputStream))
+                    val response = StringBuilder()
+                    var line: String?
+                    while (reader.readLine().also { line = it } != null) {
+                        response.append(line)
+                    }
+                    reader.close()
 
-                val json = JSONObject(response.toString())
-                val promosArray = json.getJSONArray("promotions")
-                if (promosArray.length() > 0) {
-                    val index = (0 until promosArray.length()).random()
-                    val promoJson = promosArray.getJSONObject(index)
-                    val promo = Promotion(
-                        id = promoJson.getString("id"),
-                        title = promoJson.getString("title"),
-                        description = promoJson.getString("description"),
-                        iconUrl = promoJson.getString("iconUrl"),
-                        targetUrl = promoJson.getString("targetUrl")
-                    )
-                    handler.post { callback(promo) }
+                    val json = JSONObject(response.toString())
+                    val promosArray = json.getJSONArray("promotions")
+                    if (promosArray.length() > 0) {
+                        val index = (0 until promosArray.length()).random()
+                        val promoJson = promosArray.getJSONObject(index)
+                        val promo = Promotion(
+                            id = promoJson.getString("id"),
+                            title = promoJson.getString("title"),
+                            description = promoJson.getString("description"),
+                            iconUrl = promoJson.getString("iconUrl"),
+                            targetUrl = promoJson.getString("targetUrl")
+                        )
+                        handler.post { callback(promo) }
+                    } else {
+                        handler.post { callback(null) }
+                    }
                 } else {
                     handler.post { callback(null) }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
                 handler.post { callback(null) }
+            } finally {
+                connection?.disconnect()
             }
         }
     }

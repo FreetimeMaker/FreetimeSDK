@@ -18,17 +18,22 @@ class PromotionView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
-    private val ivIcon: ImageView
-    private val tvTitle: TextView
-    private val tvDescription: TextView
+    private var ivIcon: ImageView? = null
+    private var tvTitle: TextView? = null
+    private var tvDescription: TextView? = null
     private val executor = Executors.newSingleThreadExecutor()
 
     init {
-        val view = LayoutInflater.from(context).inflate(R.layout.freetime_promotion_item, this, true)
-        ivIcon = view.findViewById(R.id.ivPromoIcon)
-        tvTitle = view.findViewById(R.id.tvPromoTitle)
-        tvDescription = view.findViewById(R.id.tvPromoDescription)
-        visibility = View.GONE
+        try {
+            val view = LayoutInflater.from(context).inflate(R.layout.freetime_promotion_item, this, true)
+            ivIcon = view.findViewById(R.id.ivPromoIcon)
+            tvTitle = view.findViewById(R.id.tvPromoTitle)
+            tvDescription = view.findViewById(R.id.tvPromoDescription)
+            visibility = View.GONE
+        } catch (e: Exception) {
+            e.printStackTrace()
+            visibility = View.GONE
+        }
     }
 
     fun loadPromotion(config: DeveloperConfig) {
@@ -42,22 +47,30 @@ class PromotionView @JvmOverloads constructor(
     }
 
     private fun displayPromotion(promo: Promotion) {
-        tvTitle.text = promo.title
-        tvDescription.text = promo.description
-        
-        // Simple image loader fallback (no Glide/Coil to keep SDK small)
-        loadIcon(promo.iconUrl)
+        try {
+            val title = tvTitle ?: return
+            val desc = tvDescription ?: return
+            
+            title.text = promo.title
+            desc.text = promo.description
+            
+            // Simple image loader fallback (no Glide/Coil to keep SDK small)
+            loadIcon(promo.iconUrl)
 
-        setOnClickListener {
-            try {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(promo.targetUrl))
-                context.startActivity(intent)
-            } catch (e: Exception) {
-                e.printStackTrace()
+            setOnClickListener {
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(promo.targetUrl))
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
+            
+            visibility = View.VISIBLE
+        } catch (e: Exception) {
+            e.printStackTrace()
+            visibility = View.GONE
         }
-        
-        visibility = View.VISIBLE
     }
 
     private fun loadIcon(url: String) {
@@ -65,7 +78,15 @@ class PromotionView @JvmOverloads constructor(
             try {
                 val stream = URL(url).openStream()
                 val bitmap = android.graphics.BitmapFactory.decodeStream(stream)
-                post { ivIcon.setImageBitmap(bitmap) }
+                if (bitmap != null) {
+                    post { 
+                        try {
+                            ivIcon?.setImageBitmap(bitmap)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }

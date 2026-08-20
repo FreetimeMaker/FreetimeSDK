@@ -11,8 +11,10 @@ import com.freetime.sdk.PaymentResult
  * RevenueCat Provider using Web Billing.
  * F-Droid friendly.
  */
-class RevenueCatWebProvider(private val baseCheckoutUrl: String) : PaymentProvider {
+class RevenueCatWebProvider(
+    private val baseCheckoutUrl: String,
     override val name: String = "RevenueCat (Card/Subscription)"
+) : PaymentProvider {
 
     override fun processPayment(
         activity: Activity,

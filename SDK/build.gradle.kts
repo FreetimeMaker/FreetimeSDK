@@ -46,7 +46,7 @@ afterEvaluate {
 }
 
 dependencies {
-    implementation("androidx.appcompat:appcompat:1.7.1")
+    implementation("androidx.appcompat:appcompat:1.8.0")
     implementation("androidx.browser:browser:1.10.0")
 
     // F-Droid friendly: No proprietary binary blobs.

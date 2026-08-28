@@ -4,10 +4,10 @@ This SDK enables the integration of real payment providers into Android applicat
 
 ## Features
 
-- **F-Droid Friendly**: No proprietary SDKs. Uses Web Flows and native Intents.
+- **F-Droid Friendly**: No proprietary SDKs. Uses native Intents.
 - **Serverless**: Designed to work without any backend infrastructure.
 - **Promotion System**: Display "Featured Projects" anywhere in your app. Privacy-friendly and fully configurable.
-- **Real Providers**: Supports RevenueCat (Web Billing) and a wide range of Cryptocurrencies.
+- **Real Providers**: Supports a wide range of Cryptocurrencies.
 - **Crypto-Ready**: Native support for 30+ major cryptocurrencies and Layer 2s (BTC, ETH, SOL, OP, ARB, BASE, etc.).
 - **Modern Infrastructure**: Built with Kotlin 2.4 and target SDK 37.
 
@@ -38,20 +38,11 @@ Developers can provide their own JSON list of promotions via `DeveloperConfig(cu
 
 ## Supported Providers
 
-1.  **RevenueCat (Web Billing)**: Secure fiat payments and subscriptions.
-2.  **Cryptocurrencies**: Comprehensive support for 32 major assets and networks:
+1. **Cryptocurrencies**: Comprehensive support for 32 major assets and networks:
     - **Legacy/Major**: BTC, ETH, DOGE, LTC, BCH, TRX, XLM, DASH, ZEC, XMR, XRP.
     - **High Performance L1s**: SOL, ADA, DOT, ALGO, ATOM, NEAR, EGLD, HBAR, APT, SUI, VET, XTZ.
     - **Layer 2s & EVMs**: OP, ARB, BASE, CELO, AVAX, MATIC, FTM.
     - **Exchange/Native**: BNB, XNO.
-
-## Installation
-
-```kotlin
-dependencies {
-    implementation("com.freetime:sdk:1.3.0")
-}
-```
 
 ## Quick Start
 
@@ -82,7 +73,6 @@ sdk.registerDefaultCryptoProviders(addresses)
 You can still register providers individually if needed:
 
 ```kotlin
-sdk.registerProvider(RevenueCatWebProvider("https://checkout.revenuecat.com/your_link"))
 sdk.registerProvider(BitcoinProvider("BTC_ADDRESS"))
 ```
 

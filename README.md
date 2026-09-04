@@ -44,6 +44,14 @@ Developers can provide their own JSON list of promotions via `DeveloperConfig(cu
     - **Layer 2s & EVMs**: OP, ARB, BASE, CELO, AVAX, MATIC, FTM.
     - **Exchange/Native**: BNB, XNO.
 
+## Installation
+
+use
+
+```bash
+git submodule add https://github.com/FreetimeMaker/FreetimeSDK.git SDK
+```
+
 ## Quick Start
 
 ### 1. Configuration

@@ -1,9 +1,9 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidMultiplatformLibrary)
-    alias(libs.plugins.kotlinSerialization)
+    id("com.android.kotlin.multiplatform.library") version "9.4.0" apply false
+    id("org.jetbrains.kotlin.multiplatform") version "2.4.20" apply false
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.4.20" apply false
 }
 
 group = "com.freetime"

@@ -21,6 +21,20 @@
       "description": "You're playing the SuperSMP Minecraft Server or planning to, then get the App now!",
       "iconUrl": "https://raw.githubusercontent.com/FreetimeMaker/SuperSMP-Companion-App/master/app/src/main/res/mipmap-xxxhdpi/icon.png",
       "targetUrl": "https://github.com/FreetimeMaker/SuperSMP-Companion-App"
+    },
+    {
+      "id": "freetimesdk_windows_info",
+      "title": "FreetimeSDK Windows",
+      "description": "Integrate Crypto-Payments in your Windows App – without Tracking!",
+      "iconUrl": "https://raw.githubusercontent.com/FreetimeMaker/FreetimeSDK/master/media/sdk_logo.png",
+      "targetUrl": "https://www.nuget.org/packages/FreetimeSDK.Windows"
+    },
+    {
+      "id": "freetimesdk_npm_info",
+      "title": "FreetimeSDK NPM",
+      "description": "Integrate Crypto-Payments in your Node.JS App – without Tracking!",
+      "iconUrl": "https://raw.githubusercontent.com/FreetimeMaker/FreetimeSDK/master/media/sdk_logo.png",
+      "targetUrl": "https://www.npmjs.com/package/freetimesdk"
     }
   ]
 }

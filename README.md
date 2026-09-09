@@ -1,5 +1,7 @@
 # <img src="media/sdk_logo.png" width="48" height="48" valign="middle"> Freetime Multi-Provider Payment SDK (F-Droid Friendly)
 
+[![](https://jitpack.io/v/FreetimeMaker/FreetimeSDK.svg)](https://jitpack.io/#FreetimeMaker/FreetimeSDK)
+
 This SDK enables the integration of real payment providers into Android applications without relying on proprietary binary blobs. It is fully open-source, serverless, and ideal for F-Droid.
 
 ## Features

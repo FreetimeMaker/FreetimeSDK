@@ -41,7 +41,7 @@ kotlin {
         }
 
         jvmMain.dependencies {
-            implementation("com.github.kenglxn.QRCodeGenerator:qrcode-kotlin:4.5.0")
+            implementation("io.github.g0dkar:qrcode-kotlin:4.5.0")
             implementation("io.ktor:ktor-client-okhttp:3.5.2")
         }
     }

@@ -38,13 +38,13 @@ jobs:
             exit 1
           fi
 
-          if git rev-parse "$VERSION" >/dev/null 2>&1; then
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
             echo "create_tag=false" >> "$GITHUB_OUTPUT"
           else
             git config user.name github-actions
             git config user.email github-actions@github.com
-            git tag "$VERSION"
-            git push origin "$VERSION"
+            git tag "v$VERSION"
+            git push origin "v$VERSION"
             echo "create_tag=true" >> "$GITHUB_OUTPUT"
           fi
 
@@ -52,6 +52,6 @@ jobs:
         if: steps.versioncheck.outputs.create_tag == 'true'
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ steps.versioncheck.outputs.version }}
+          tag_name: v${{ steps.versioncheck.outputs.version }}
           draft: false
           generate_release_notes: true

@@ -26,23 +26,32 @@ jobs:
         id: versioncheck
         run: |
           # Use SDK for version detection
-          VERSION=$(grep 'versionName' SDK/build.gradle.kts | sed -E 's/.*versionName[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/')
+          # Search for version = "X.Y.Z" in SDK/build.gradle.kts
+          VERSION=$(grep '^version[[:space:]]*=[[:space:]]*"' SDK/build.gradle.kts | cut -d '"' -f 2)
+          echo "Found version: $VERSION"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
           git fetch --tags
 
-          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+          if [ -z "$VERSION" ]; then
+            echo "Error: Version not found"
+            exit 1
+          fi
+
+          if git rev-parse "$VERSION" >/dev/null 2>&1; then
             echo "create_tag=false" >> "$GITHUB_OUTPUT"
           else
-            git tag "v$VERSION"
-            git push origin "v$VERSION"
+            git config user.name github-actions
+            git config user.email github-actions@github.com
+            git tag "$VERSION"
+            git push origin "$VERSION"
             echo "create_tag=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Create Release
-        if: needs.prepare_release.outputs.create_tag == 'true'
+        if: steps.versioncheck.outputs.create_tag == 'true'
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: v${{ needs.prepare_release.outputs.version }}
+          tag_name: ${{ steps.versioncheck.outputs.version }}
           draft: false
           generate_release_notes: true

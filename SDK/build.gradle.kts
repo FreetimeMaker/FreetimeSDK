@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.freetime"
-version = "1.3.0"
+version = "2.0.0"
 
 kotlin {
     android {
@@ -24,11 +24,11 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.kotlinx.serialization.json)
-            implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.content.negotiation)
-            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation("io.ktor:ktor-serialization-kotlinx-json:3.5.2")
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
+            implementation("io.ktor:ktor-client-core:3.5.2")
+            implementation("io.ktor:ktor-client-content-negotiation:3.5.2")
+            implementation("io.ktor:ktor-serialization-kotlinx-json:3.5.2")
         }
 
         commonTest.dependencies {
@@ -36,13 +36,13 @@ kotlin {
         }
 
         androidMain.dependencies {
-            implementation(libs.ktor.client.okhttp)
-            implementation(libs.kotlinx.coroutines.android)
+            implementation("io.ktor:ktor-client-okhttp:3.5.2")
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
         }
 
         jvmMain.dependencies {
-            implementation(libs.qrcode.kotlin)
-            implementation(libs.ktor.client.okhttp)
+            implementation("com.github.kenglxn.QRCodeGenerator:qrcode-kotlin:4.5.0")
+            implementation("io.ktor:ktor-client-okhttp:3.5.2")
         }
     }
 }

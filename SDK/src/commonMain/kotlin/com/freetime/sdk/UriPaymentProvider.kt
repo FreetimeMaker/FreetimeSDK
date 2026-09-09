@@ -29,8 +29,9 @@ fun urlEncode(s: String): String {
             if (char in allowed) {
                 append(char)
             } else {
-                // Simplistic encoding for non-allowed characters
-                append("%${char.code.toString(16).uppercase()}")
+                // Correctly pad hex values to 2 digits
+                val hex = char.code.toString(16).uppercase()
+                append("%${if (hex.length == 1) "0$hex" else hex}")
             }
         }
     }

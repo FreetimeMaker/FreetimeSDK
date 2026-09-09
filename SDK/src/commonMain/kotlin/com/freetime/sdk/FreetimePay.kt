@@ -23,21 +23,21 @@ class FreetimePay(
      */
     fun registerDefaultCryptoProviders(addresses: Map<String, String>) {
         val cryptoMap = mapOf(
-            "BTC" to ("Bitcoin (BTC)" to "bitcoin"),
-            "ETH" to ("Ethereum (ETH)" to "ethereum"),
-            "DOGE" to ("Dogecoin (DOGE)" to "doge"),
-            "LTC" to ("Litecoin (LTC)" to "litecoin"),
-            "BCH" to ("Bitcoin Cash (BCH)" to "bitcoincash"),
-            "DASH" to ("Dash (DASH)" to "dash"),
-            "XRP" to ("XRP (XRP)" to "xrp"),
-            "SOL" to ("Solana (SOL)" to "solana"),
-            "MATIC" to ("Polygon (MATIC)" to "polygon")
+            "BTC" to Triple("Bitcoin (BTC)", "bitcoin", "amount"),
+            "ETH" to Triple("Ethereum (ETH)", "ethereum", "value"),
+            "DOGE" to Triple("Dogecoin (DOGE)", "doge", "amount"),
+            "LTC" to Triple("Litecoin (LTC)", "litecoin", "amount"),
+            "BCH" to Triple("Bitcoin Cash (BCH)", "bitcoincash", "amount"),
+            "DASH" to Triple("Dash (DASH)", "dash", "amount"),
+            "XRP" to Triple("XRP (XRP)", "xrp", "amount"),
+            "SOL" to Triple("Solana (SOL)", "solana", "amount"),
+            "MATIC" to Triple("Polygon (MATIC)", "polygon", "amount")
         )
 
         for ((symbol, config) in cryptoMap) {
             val address = addresses[symbol]
             if (address != null) {
-                registerProvider(CryptoProvider(config.first, config.second, address))
+                registerProvider(CryptoProvider(config.first, config.second, address, config.third))
             }
         }
     }
@@ -57,14 +57,18 @@ class FreetimePay(
         request: PaymentRequest,
         onResult: (PaymentResult) -> Unit
     ) {
-        val provider = providers.find { it.name.equals(providerName, ignoreCase = true) }
-        if (provider == null) {
-            onResult(PaymentResult.Error("Provider not found: $providerName"))
-            return
-        }
+        try {
+            val provider = providers.find { it.name.equals(providerName, ignoreCase = true) }
+            if (provider == null) {
+                onResult(PaymentResult.Error("Provider not found: $providerName"))
+                return
+            }
 
-        provider.processPayment(context, request) { result ->
-            onResult(result)
+            provider.processPayment(context, request) { result ->
+                onResult(result)
+            }
+        } catch (e: Exception) {
+            onResult(PaymentResult.Error("FreetimeSDK internal error: ${e.message}"))
         }
     }
 }

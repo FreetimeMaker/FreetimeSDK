@@ -24,11 +24,11 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
-            implementation("io.ktor:ktor-client-core:3.5.2")
-            implementation("io.ktor:ktor-client-content-negotiation:3.5.2")
-            implementation("io.ktor:ktor-serialization-kotlinx-json:3.5.2")
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
         }
 
         commonTest.dependencies {
@@ -36,13 +36,13 @@ kotlin {
         }
 
         androidMain.dependencies {
-            implementation("io.ktor:ktor-client-okhttp:3.5.2")
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
+            implementation(libs.ktor.client.okhttp)
+            implementation(libs.kotlinx.coroutines.android)
         }
 
         jvmMain.dependencies {
-            implementation("io.github.g0dkar:qrcode-kotlin:4.5.0")
-            implementation("io.ktor:ktor-client-okhttp:3.5.2")
+            implementation(libs.qrcode.kotlin)
+            implementation(libs.ktor.client.okhttp)
         }
     }
 }

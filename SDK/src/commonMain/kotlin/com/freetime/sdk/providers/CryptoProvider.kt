@@ -10,10 +10,11 @@ import com.freetime.sdk.urlEncode
 class CryptoProvider(
     name: String,
     val scheme: String,
-    recipientAddress: String
+    recipientAddress: String,
+    val amountParam: String = "amount"
 ) : UriPaymentProvider(name, recipientAddress) {
     
     override fun buildUri(request: PaymentRequest): String {
-        return "$scheme:$recipientAddress?amount=${request.amount}&label=${urlEncode(request.description)}"
+        return "$scheme:$recipientAddress?$amountParam=${request.amount}&label=${urlEncode(request.description)}"
     }
 }
